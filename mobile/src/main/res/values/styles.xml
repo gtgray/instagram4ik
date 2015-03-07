@@ -4,7 +4,6 @@
         <item name="colorPrimary">@color/clr_toolbar_background</item>
         <item name="colorPrimaryDark">@color/clr_statusbar_background</item>
         <item name="colorControlNormal">@color/clr_white</item>
-        <item name="android:progressBarStyle">@style/Widget.AppCompat.ProgressBar.Horizontal</item>
     </style>
 
     <style name="Style.Toolbar" parent="Theme.NoActionbar">
