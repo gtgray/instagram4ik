@@ -1,0 +1,37 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/clr_white"
+    >
+
+    <ImageView
+        android:id="@+id/details_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/ic_picture_default"
+        android:contentDescription="@string/app_name"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_below="@id/details_photo"
+        android:text="@string/likes"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:drawableRight="@drawable/ic_go_right"
+        android:drawableEnd="@drawable/ic_go_right"
+        android:drawablePadding="16dp"
+        android:background="@drawable/slc_btn_state"
+        />
+
+</RelativeLayout>

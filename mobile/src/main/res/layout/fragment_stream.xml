@@ -1,0 +1,21 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/clr_white"
+    >
+
+    <ListView
+        android:id="@+id/stream_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/clr_divider"
+        android:dividerHeight="1dp"
+        android:listSelector="@null"
+        android:cacheColorHint="@null"
+        android:fadingEdge="none"
+        android:focusable="false"
+        />
+
+</LinearLayout>

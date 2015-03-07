@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="clr_transparent">#00000000</color>
+    <color name="clr_black">#ff000000</color>
+    <color name="clr_white">#ffffffff</color>
+    <color name="clr_light_green">#ffF1F8E9</color>
+
+    <color name="clr_divider">#26000000</color>
+
+    <color name="clr_shadow_start">#20000000</color>
+
+    <color name="clr_settings_item_title">#cc000000</color>
+    <color name="clr_settings_divider_back">@color/clr_divider</color>
+
+    <color name="clr_toolbar_background">#ff82b1ff</color>
+    <color name="clr_statusbar_background">#ff01579b</color>
+
+</resources>

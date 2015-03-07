@@ -1,0 +1,15 @@
+<resources>
+
+    <string name="app_name">instgrm4ik</string>
+    <string name="client_id">5e0a137c6062453d915aa79f09478163</string>
+
+    <string name="stream">Stream</string>
+
+    <string name="commented">"Commented "</string>
+    <string name="liked">"Liked "</string>
+
+    <string name="likes">Likes</string>
+
+    <string name="action_logout">Logout</string>
+
+</resources>

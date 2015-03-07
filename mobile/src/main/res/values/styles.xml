@@ -1,0 +1,25 @@
+<resources>
+
+    <style name="Theme.NoActionbar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/clr_toolbar_background</item>
+        <item name="colorPrimaryDark">@color/clr_statusbar_background</item>
+        <item name="colorControlNormal">@color/clr_white</item>
+        <item name="android:progressBarStyle">@style/Widget.AppCompat.ProgressBar.Horizontal</item>
+    </style>
+
+    <style name="Style.Toolbar" parent="Theme.NoActionbar">
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="popupTheme">@style/Style.Toolbar.Popup</item>
+        <item name="android:homeAsUpIndicator">@drawable/abc_ic_ab_back_mtrl_am_alpha</item>
+    </style>
+
+    <style name="Style.Toolbar.Popup" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:colorBackground">@color/clr_white</item>
+    </style>
+
+    <style name="Style.Toolbar.Title" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/clr_white</item>
+    </style>
+
+</resources>

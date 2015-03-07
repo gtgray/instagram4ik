@@ -1,0 +1,120 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/clr_white"
+    >
+
+    <ImageView
+        android:id="@+id/stream_item_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/ic_picture_default"
+        android:contentDescription="@string/app_name"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        >
+
+        <TextView
+            android:id="@+id/stream_item_comments"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/commented"
+            android:textSize="16sp"
+            />
+
+        <TextView
+            android:id="@+id/stream_item_likes"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/liked"
+            android:textSize="16sp"
+            />
+
+        <CheckedTextView
+            android:id="@+id/stream_item_btn_like"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="6dp"
+            android:gravity="center"
+            android:background="@drawable/slc_btn_like_state"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginEnd="32dp"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/stream_item_comment_one"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/app_name"
+            android:textSize="14sp"
+            android:maxLines="2"
+            />
+
+        <TextView
+            android:id="@+id/stream_item_comment_two"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/app_name"
+            android:textSize="14sp"
+            android:maxLines="2"
+            />
+
+        <TextView
+            android:id="@+id/stream_item_comment_three"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/app_name"
+            android:textSize="14sp"
+            android:maxLines="2"
+            />
+
+        <TextView
+            android:id="@+id/stream_item_comment_four"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/app_name"
+            android:textSize="14sp"
+            android:maxLines="2"
+            />
+
+        <TextView
+            android:id="@+id/stream_item_comment_five"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/app_name"
+            android:textSize="14sp"
+            android:maxLines="2"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,25 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <WebView
+        android:id="@+id/web_login"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <ProgressBar
+        android:id="@+id/web_progress"
+        android:layout_width="match_parent"
+        android:layout_height="7dp"
+        android:layout_marginTop="-3dp"
+        android:indeterminateOnly="false"
+        android:indeterminate="false"
+        android:visibility="gone"
+        />
+        <!--style="@style/Widget.AppCompat.ProgressBar.Horizontal"-->
+
+</RelativeLayout>
