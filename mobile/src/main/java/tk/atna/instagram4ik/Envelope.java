@@ -2,10 +2,12 @@ package tk.atna.instagram4ik;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class Envelope {
 
     Meta meta;
-    Content data;
+    List<Media> data;
     Pagination pagination;
 
 
@@ -29,145 +31,87 @@ public class Envelope {
         String nextMaxId;
     }
 
-    private class Content {
-        // nothing here
-    }
+    static class Media {
 
-/*
-{
-    "data": [{
-        "location": {
-            "id": "833",
-            "latitude": 37.77956816727314,
-            "longitude": -122.41387367248539,
-            "name": "Civic Center BART"
-        },
-        "comments": {
-            "count": 16,
-            "data": [ ... ]
-        },
-        "caption": null,
-        "link": "http://instagr.am/p/BXsFz/",
-        "likes": {
-            "count": 190,
-            "data": [{
-                "username": "shayne",
-                "full_name": "Shayne Sweeney",
-                "id": "20",
-                "profile_picture": "..."
-            }, {...subset of likers...}]
-        },
-        "created_time": "1296748524",
-        "images": {
-            "low_resolution": {
-                "url": "http://distillery.s3.amazonaws.com/media/2011/02/03/efc502667a554329b52d9a6bab35b24a_6.jpg",
-                "width": 306,
-                "height": 306
-            },
-            "thumbnail": {
-                "url": "http://distillery.s3.amazonaws.com/media/2011/02/03/efc502667a554329b52d9a6bab35b24a_5.jpg",
-                "width": 150,
-                "height": 150
-            },
-            "standard_resolution": {
-                "url": "http://distillery.s3.amazonaws.com/media/2011/02/03/efc502667a554329b52d9a6bab35b24a_7.jpg",
-                "width": 612,
-                "height": 612
+        String id;
+        String type;
+        Images images;
+        Caption caption;
+        Comments comments;
+        Likes likes;
+
+        @SerializedName("created_time")
+        String createdTime;
+
+        @SerializedName("user_has_liked")
+        boolean iLiked;
+
+
+        static class Images {
+
+            @SerializedName("low_resolution")
+            Image low;
+
+            @SerializedName("thumbnail")
+            Image thumb;
+
+            @SerializedName("standard_resolution")
+            Image standard;
+
+
+            static class Image {
+
+                String url;
+                int width;
+                int height;
             }
-        },
-        "type": "image",
-        "users_in_photo": [],
-        "filter": "Earlybird",
-        "tags": [],
-        "id": "22987123",
-        "user": {
-            "username": "kevin",
-            "full_name": "Kevin S",
-            "profile_picture": "http://distillery.s3.amazonaws.com/profiles/profile_3_75sq_1295574122.jpg",
-            "id": "3"
         }
-    },
-    {
-        "videos": {
-            "low_resolution": {
-                "url": "http://distilleryvesper9-13.ak.instagram.com/090d06dad9cd11e2aa0912313817975d_102.mp4",
-                "width": 480,
-                "height": 480
-            },
-            "standard_resolution": {
-                "url": "http://distilleryvesper9-13.ak.instagram.com/090d06dad9cd11e2aa0912313817975d_101.mp4",
-                "width": 640,
-                "height": 640
-            },
-        "comments": {
-            "data": [{
-                "created_time": "1279332030",
-                "text": "Love the sign here",
-                "from": {
-                    "username": "mikeyk",
-                    "full_name": "Mikey Krieger",
-                    "id": "4",
-                    "profile_picture": "http://distillery.s3.amazonaws.com/profiles/profile_1242695_75sq_1293915800.jpg"
-                },
-                "id": "8"
-            },
-            {
-                "created_time": "1279341004",
-                "text": "Chilako taco",
-                "from": {
-                    "username": "kevin",
-                    "full_name": "Kevin S",
-                    "id": "3",
-                    "profile_picture": "..."
-                },
-                "id": "3"
-            }],
-            "count": 2
-        },
-        "caption": null,
-        "likes": {
-            "count": 1,
-            "data": [{
-                "username": "mikeyk",
-                "full_name": "Mikeyk",
-                "id": "4",
-                "profile_picture": "..."
-            }]
-        },
-        "link": "http://instagr.am/p/D/",
-        "created_time": "1279340983",
-        "images": {
-            "low_resolution": {
-                "url": "http://distilleryimage2.ak.instagram.com/11f75f1cd9cc11e2a0fd22000aa8039a_6.jpg",
-                "width": 306,
-                "height": 306
-            },
-            "thumbnail": {
-                "url": "http://distilleryimage2.ak.instagram.com/11f75f1cd9cc11e2a0fd22000aa8039a_5.jpg",
-                "width": 150,
-                "height": 150
-            },
-            "standard_resolution": {
-                "url": "http://distilleryimage2.ak.instagram.com/11f75f1cd9cc11e2a0fd22000aa8039a_7.jpg",
-                "width": 612,
-                "height": 612
+
+
+        static class Caption {
+
+            String text;
+        }
+
+
+        static class Comments {
+
+            Meta meta; // appears on comments list request
+            List<Comment> data;
+            int count;
+
+
+            static class Comment {
+
+                String id;
+                String text;
+                User from;
+
+                @SerializedName("created_time")
+                String createdTime;
             }
-        },
-        "type": "video",
-        "users_in_photo": null,
-        "filter": "Vesper",
-        "tags": [],
-        "id": "363839373298",
-        "user": {
-            "username": "kevin",
-            "full_name": "Kevin S",
-            "profile_picture": "http://distillery.s3.amazonaws.com/profiles/profile_3_75sq_1295574122.jpg",
-            "id": "3"
-        },
-        "location": null
-    },
-    ...]
-}
-*/
+        }
+
+
+        static class Likes {
+
+            Meta meta; // appears on likes list request
+            List<User> data;
+            int count;
+        }
+
+
+        static class User {
+
+            String id;
+            String username;
+
+            @SerializedName("full_name")
+            String fullName;
+
+            @SerializedName("profile_picture")
+            String picture;
+        }
+    }
 
 }

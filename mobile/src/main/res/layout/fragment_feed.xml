@@ -1,13 +1,13 @@
-<LinearLayout
+<android.support.v4.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/clr_white"
     >
 
     <ListView
-        android:id="@+id/stream_list"
+        android:id="@+id/feed_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:divider="@color/clr_divider"
@@ -18,4 +18,4 @@
         android:focusable="false"
         />
 
-</LinearLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

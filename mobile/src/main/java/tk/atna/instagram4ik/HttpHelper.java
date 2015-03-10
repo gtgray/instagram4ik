@@ -2,29 +2,14 @@ package tk.atna.instagram4ik;
 
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.util.Log;
-import android.util.SparseArray;
+import android.widget.ImageView;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.Set;
-import java.util.concurrent.Future;
+import com.squareup.picasso.Picasso;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import retrofit.converter.ConversionException;
-import retrofit.converter.Converter;
-import retrofit.mime.TypedInput;
-import retrofit.mime.TypedOutput;
-import retrofit.mime.TypedString;
 
 public class HttpHelper {
 
@@ -38,7 +23,7 @@ public class HttpHelper {
 
     private final Context context;
 
-    private SparseArray<Future> currentRequests;
+//    private SparseArray<Future> currentRequests;
 //    private SparseArray<ImageViewFuture> currentIconRequests;
 
     private String key;
@@ -46,14 +31,13 @@ public class HttpHelper {
 
     public HttpHelper(Context context) {
         this.context = context;
-        this.currentRequests = new SparseArray<>();
+//        this.currentRequests = new SparseArray<>();
 //        this.currentIconRequests = new SparseArray<>();
 
         this.key = context.getString(KEY);
 
         RestAdapter ra = new RestAdapter.Builder()
                 .setEndpoint(ServerApi.SERVER_URL)
-                .setConverter(new MockConverter())
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
 
@@ -61,162 +45,169 @@ public class HttpHelper {
 
     }
 
-    public static String getAuthUrl(String clientId) {
-        return ServerApi.FULL_AUTH_URL + clientId;
-    }
-
-    public static String getBlank() {
-        return ServerApi.BLANK_URL;
-    }
-
-    public static String getLogoutUrl() {
-        return ServerApi.FULL_LOGOUT_URL;
-    }
-
-    public static Uri hitTargetRedirect(String url) {
-        Uri uri = Uri.parse(url);
-        // if needed host
-        if((ServerApi.DEFAULT_REDIRECT_URI.equals(uri.getHost())))
-            return uri;
-
-        return null;
-    }
-
-    public static String parseToken(Uri uri) {
-        String raw = uri.getFragment();
-        if (raw != null) {
-            int index = (ServerApi.ACCESS_TOKEN + "=").length();
-            if (index > 0)
-                return raw.substring(index);
+    public Envelope getFeed(String token, String minId, String maxId) {
+        if(token == null) {
+            throw new IllegalArgumentException("Token can't be null");
         }
 
-        return null;
+        return api.getFeed(token, ServerApi.DEFAULT_COUNT,
+                            minId == null ? "" : minId,
+                            maxId == null ? "" : maxId);
     }
 
-    public static Boolean isUserDenied(Uri uri) {
-        Set<String> names = uri.getQueryParameterNames();
-        for(String name : names) {
-            if(ServerApi.ERROR_REASON.equals(name)) {
-                return ServerApi.USER_DENIED.equals(uri.getQueryParameter(name));
-            }
-        }
-        return null;
-    }
-
-//    public void logout(String token, final HttpCallback<String> callback) {
-//        api.logout(token, new Callback<String>() {
-//            @Override
-//            public void success(String s, Response response) {
-//                callback.onResult(s, null);
-//                Log.d("myLogs", "logout completed with status " + response.getStatus());
-//            }
-//
-//            @Override
-//            public void failure(RetrofitError error) {
-////                error.printStackTrace();
-//                callback.onResult(null, error);
-//            }
-//        });
-//    }
-
-    public int getUserStream(String token, String minId, String maxId,
-                             final HttpCallback<String> callback) {
-
+    public int getFeedAsync(String token, String minId, String maxId,
+                            final HttpCallback<Envelope> callback) {
         if(token == null)
             throw new IllegalArgumentException("Token can't be null");
 
-        api.getUserStream(token, ServerApi.DEFAULT_COUNT,
+        api.getFeedAsync(token, ServerApi.DEFAULT_COUNT,
                           minId == null ? "" : minId,
                           maxId == null ? "" : maxId,
-                          new Callback<String>() {
+                          new Callback<Envelope>() {
             @Override
-            public void success(String envelope, Response response) {
-//                callback.onResult(envelope, null);
-
-                Log.d("myLogs", "--------- envelop: " + envelope);
-
+            public void success(Envelope envelope, Response response) {
+                callback.onResult(envelope, null);
             }
 
             @Override
             public void failure(RetrofitError error) {
-//                callback.onResult(null, error);
-
-                Log.d("myLogs", "--------- error: " + error.getMessage());
-
+                error.printStackTrace();
+                callback.onResult(null, error);
             }
         });
 
         return 0;
     }
 
-    private boolean isNetworkUp() {
-        ConnectivityManager cm = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        // network is not available at all
-        if(cm == null)
-            return false;
+    public Envelope.Media.Comments getComments(String token, String mediaId) {
+        if(token == null)
+            throw new IllegalArgumentException("Token can't be null");
 
-        NetworkInfo ni = cm.getActiveNetworkInfo();
-        // default network is presented and it is able to connect through and it is connected now
-        return (ni != null) && ni.isAvailable() && ni.isConnected();
+        if(mediaId == null)
+            throw new IllegalArgumentException("Media id can't be null");
+
+        return api.getComments(token, mediaId);
     }
 
+    public int getCommentsAsync(String token, String mediaId,
+                                final HttpCallback<Envelope.Media.Comments> callback) {
+        if(token == null)
+            throw new IllegalArgumentException("Token can't be null");
+
+        if(mediaId == null)
+            throw new IllegalArgumentException("Media id can't be null");
+
+        api.getCommentsAsync(token, mediaId, new Callback<Envelope.Media.Comments>() {
+            @Override
+            public void success(Envelope.Media.Comments comments, Response response) {
+                callback.onResult(comments, null);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                error.printStackTrace();
+                callback.onResult(null, error);
+            }
+        });
+
+        return 0;
+    }
+
+    public Envelope.Media.Likes getLikes(String token, String mediaId) {
+        if(token == null)
+            throw new IllegalArgumentException("Token can't be null");
+
+        if(mediaId == null)
+            throw new IllegalArgumentException("Media id can't be null");
+
+        return api.getLikes(token, mediaId);
+    }
+
+    public int getLikesAsync(String token, String mediaId,
+                             final HttpCallback<Envelope.Media.Likes> callback) {
+        if(token == null)
+            throw new IllegalArgumentException("Token can't be null");
+
+        if(mediaId == null)
+            throw new IllegalArgumentException("Media id can't be null");
+
+        api.getLikesAsync(token, mediaId, new Callback<Envelope.Media.Likes>() {
+            @Override
+            public void success(Envelope.Media.Likes likes, Response response) {
+                callback.onResult(likes, null);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                error.printStackTrace();
+                callback.onResult(null, error);
+            }
+        });
+
+        return 0;
+    }
+
+    public int likeAsync(String token, String mediaId,
+                         final HttpCallback<Envelope.Media.Likes> callback) {
+        if(token == null)
+            throw new IllegalArgumentException("Token can't be null");
+
+        if(mediaId == null)
+            throw new IllegalArgumentException("Media id can't be null");
+
+        api.likeAsync(token, mediaId, new Callback<Envelope.Media.Likes>() {
+            @Override
+            public void success(Envelope.Media.Likes likes, Response response) {
+                callback.onResult(likes, null);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                error.printStackTrace();
+                callback.onResult(null, error);
+            }
+        });
+
+        return 0;
+    }
+
+    public int unlikeAsync(String token, String mediaId,
+                             final HttpCallback<Envelope.Media.Likes> callback) {
+        if(token == null)
+            throw new IllegalArgumentException("Token can't be null");
+
+        if(mediaId == null)
+            throw new IllegalArgumentException("Media id can't be null");
+
+        api.unlikeAsync(token, mediaId, new Callback<Envelope.Media.Likes>() {
+            @Override
+            public void success(Envelope.Media.Likes likes, Response response) {
+                callback.onResult(likes, null);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                error.printStackTrace();
+                callback.onResult(null, error);
+            }
+        });
+
+        return 0;
+    }
+
+    public void getMediaImage(String url, ImageView view) {
+
+        Picasso.with(context)
+                .load(url)
+                .placeholder(DEFAULT_PICTURE)
+                .error(DEFAULT_PICTURE)
+                .into(view);
+    }
 
 
     public interface HttpCallback<T> {
 
         public void onResult(T result, Exception exception);
-    }
-
-
-    static class MockConverter implements Converter {
-
-        @Override
-        public Object fromBody(TypedInput body, Type type) throws ConversionException {
-            BufferedInputStream bis = null;
-            ByteArrayOutputStream baos = null;
-            byte[] buf = new byte[1024];
-
-            try {
-                bis = new BufferedInputStream(body.in(), buf.length);
-                baos = new ByteArrayOutputStream(buf.length);
-
-                while(bis.read(buf) > -1)
-                    baos.write(buf);
-
-                byte[] result = baos.toByteArray();
-
-                bis.close();
-                bis = null;
-
-                baos.close();
-                baos = null;
-
-                return new String(result);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                closeItQuiet(bis);
-                closeItQuiet(baos);
-            }
-            return null;
-        }
-
-        @Override
-        public TypedOutput toBody(Object object) {
-            return new TypedString(object.toString());
-        }
-
-        public static void closeItQuiet(Closeable c) {
-            if(c != null)
-                try {
-                    c.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    c = null;
-                }
-        }
     }
 
 }

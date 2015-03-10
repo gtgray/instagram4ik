@@ -39,19 +39,16 @@ public class MainActivity extends ActionBarActivity {
             toolbar.setElevation(8);
         }
 
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.content, StreamFragment.newInstance())
-//                    .commit();
-//        }
-
+        if (savedInstanceState == null) {
+            Utils.parkFragment(getSupportFragmentManager(),
+                               R.id.content,
+                               FeedFragment.class,
+                               true, false);
+        }
 
         Intent intent = getIntent();
         String token = intent.getStringExtra(MainActivity.class.getName());
         contentManager.rememberToken(token);
-
-//        HttpHelper helper = new HttpHelper(this);
-//        helper.getUserStream(token, null, null, null);
 
     }
 
@@ -71,6 +68,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // user decided to log out
         if (item.getItemId() == R.id.action_logout) {
             shutdown();
             return true;
@@ -88,20 +86,9 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void shutdown() {
-//        contentManager.logout(new ContentManager.ContentCallback<String>() {
-//            @Override
-//            public void onResult(String result, Exception exception) {
-//                if(exception != null) {
-//                    exception.printStackTrace();
-//                    return;
-//                }
-
         Intent intent = new Intent(this, LoginActivity.class);
         intent.putExtra(LoginActivity.class.getName(), contentManager.getToken());
         startActivity(intent);
         finish();
-
-//            }
-//        });
     }
 }

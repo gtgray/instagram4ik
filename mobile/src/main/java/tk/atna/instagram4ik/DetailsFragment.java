@@ -12,7 +12,7 @@ public class DetailsFragment extends Fragment {
 
     public static final String TAG = DetailsFragment.class.getSimpleName();
 
-    public static final int TITLE = R.string.stream;
+    public static final int TITLE = R.string.feed;
 
     private ContentManager helper = ContentManager.get();
 

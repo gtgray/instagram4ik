@@ -52,7 +52,7 @@ public class LoginActivity extends Activity {
     private void makeWebLogout() {
         WebView webView = new WebView(this);
         initWebView(webView, new WebLogoutClient(), false);
-        webView.loadUrl(HttpHelper.getLogoutUrl());
+        webView.loadUrl(AccountHelper.getLogoutUrl());
 
 //        String cookie = CookieManager.getInstance().getCookie("instagram.com");
 //        Log.d("myLogs", "----------- cookie: " + cookie);
@@ -73,11 +73,11 @@ public class LoginActivity extends Activity {
 
     private void showLoginForm() {
         clearWebView();
-        webView.loadUrl(HttpHelper.getAuthUrl(getString(R.string.client_id)));
+        webView.loadUrl(AccountHelper.getAuthUrl(getString(R.string.client_id)));
     }
 
     private void clearWebView() {
-        webView.loadUrl(HttpHelper.getBlank());
+        webView.loadUrl(AccountHelper.getBlank());
         webView.clearHistory();
     }
 
@@ -113,14 +113,14 @@ public class LoginActivity extends Activity {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
 //            Log.d("myLogs", "shouldOverrideUrlLoading ----------- url: " + url);
 
-            Uri uri = HttpHelper.hitTargetRedirect(url);
+            Uri uri = AccountHelper.hitTargetRedirect(url);
             // if target host hit
             if(uri != null) {
                 // not error / user denied / another error
-                Boolean error = HttpHelper.isUserDenied(uri);
+                Boolean error = AccountHelper.isUserDenied(uri);
                 // not error
                 if(error == null) {
-                    String token = HttpHelper.parseToken(uri);
+                    String token = AccountHelper.parseToken(uri);
                     if (token != null)
                         startMain(token);
 

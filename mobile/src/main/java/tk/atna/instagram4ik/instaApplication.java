@@ -2,12 +2,12 @@ package tk.atna.instagram4ik;
 
 import android.app.Application;
 
-public class instaApplication extends Application {
+public class InstaApplication extends Application {
 
-//    private static instaApplication INSTANCE;
+//    private static InstaApplication INSTANCE;
 
 
-//    public instaApplication() {
+//    public InstaApplication() {
 //        INSTANCE = this;
 //    }
 

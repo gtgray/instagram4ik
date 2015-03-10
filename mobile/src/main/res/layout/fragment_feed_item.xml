@@ -2,16 +2,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
     android:orientation="vertical"
     android:background="@color/clr_white"
     >
 
     <ImageView
-        android:id="@+id/stream_item_photo"
+        android:id="@+id/feed_item_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:background="@drawable/ic_picture_default"
+        android:background="@color/clr_light_green"
         android:contentDescription="@string/app_name"
         />
 
@@ -27,7 +28,7 @@
         >
 
         <TextView
-            android:id="@+id/stream_item_comments"
+            android:id="@+id/feed_item_commented"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
@@ -36,7 +37,7 @@
             />
 
         <TextView
-            android:id="@+id/stream_item_likes"
+            android:id="@+id/feed_item_liked"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
@@ -45,7 +46,7 @@
             />
 
         <CheckedTextView
-            android:id="@+id/stream_item_btn_like"
+            android:id="@+id/feed_item_btn_like"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:padding="6dp"
@@ -55,6 +56,18 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/feed_item_created"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginEnd="32dp"
+        android:text="@string/created"
+        android:textSize="14sp"
+        />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -62,57 +75,68 @@
         android:layout_marginStart="32dp"
         android:layout_marginRight="32dp"
         android:layout_marginEnd="32dp"
+        android:layout_marginTop="16dp"
         android:orientation="vertical"
         >
 
         <TextView
-            android:id="@+id/stream_item_comment_one"
+            android:id="@+id/feed_item_comment_one"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/app_name"
             android:textSize="14sp"
-            android:maxLines="2"
+            android:maxLines="5"
+            android:visibility="gone"
+            android:background="@drawable/drw_feed_comment_item_back"
             />
 
         <TextView
-            android:id="@+id/stream_item_comment_two"
+            android:id="@+id/feed_item_comment_two"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/app_name"
             android:textSize="14sp"
-            android:maxLines="2"
+            android:maxLines="5"
+            android:visibility="gone"
+            android:background="@drawable/drw_feed_comment_item_back"
             />
 
         <TextView
-            android:id="@+id/stream_item_comment_three"
+            android:id="@+id/feed_item_comment_three"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/app_name"
             android:textSize="14sp"
-            android:maxLines="2"
+            android:maxLines="5"
+            android:visibility="gone"
+            android:background="@drawable/drw_feed_comment_item_back"
             />
 
         <TextView
-            android:id="@+id/stream_item_comment_four"
+            android:id="@+id/feed_item_comment_four"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/app_name"
             android:textSize="14sp"
-            android:maxLines="2"
+            android:maxLines="5"
+            android:visibility="gone"
+            android:background="@drawable/drw_feed_comment_item_back"
             />
 
         <TextView
-            android:id="@+id/stream_item_comment_five"
+            android:id="@+id/feed_item_comment_five"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/app_name"
             android:textSize="14sp"
-            android:maxLines="2"
+            android:maxLines="5"
+            android:visibility="gone"
+            android:background="@drawable/drw_feed_comment_item_back"
             />
 
     </LinearLayout>
