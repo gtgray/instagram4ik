@@ -7,11 +7,11 @@
     >
 
     <ImageView
-        android:id="@+id/details_comment_user_icon"
+        android:id="@+id/details_comment_user_picture"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginStart="24dp"
         android:layout_gravity="center_vertical"
         android:background="@drawable/ic_picture_default"
         android:contentDescription="@string/app_name"
@@ -22,46 +22,48 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginEnd="24dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         >
 
         <TextView
-            android:id="@+id/details_comment_user"
+            android:id="@+id/details_comment_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             android:text="@string/app_name"
-            android:textSize="14sp"
+            android:textSize="12sp"
+            android:textStyle="bold"
             android:singleLine="true"
             />
 
         <TextView
-            android:id="@+id/details_comment_date"
+            android:id="@+id/details_comment_created"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_alignBaseline="@id/details_comment_user"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_toRightOf="@id/details_comment_user"
-            android:layout_toEndOf="@id/details_comment_user"
+            android:layout_toRightOf="@id/details_comment_username"
+            android:layout_toEndOf="@id/details_comment_username"
             android:text="@string/app_name"
-            android:textSize="14sp"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:gravity="end"
             />
 
         <TextView
             android:id="@+id/details_comment_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_below="@id/details_comment_user"
+            android:layout_below="@id/details_comment_username"
             android:text="@string/app_name"
-            android:textSize="14sp"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:maxLines="10"
             />
 
     </RelativeLayout>

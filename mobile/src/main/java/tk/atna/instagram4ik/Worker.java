@@ -1,7 +1,7 @@
 package tk.atna.instagram4ik;
 
-import android.os.Handler;
-import android.os.Looper;
+import android.os.*;
+import android.os.Process;
 
 public class Worker {
 
@@ -23,6 +23,7 @@ public class Worker {
         Thread executor = new Thread(new Runnable() {
             @Override
             public void run() {
+
                 if(task != null) {
                     task.run();
                     (new Handler(Looper.getMainLooper()))
@@ -36,6 +37,7 @@ public class Worker {
                 }
             }
         });
+        executor.setPriority(Process.THREAD_PRIORITY_BACKGROUND);
         executor.start();
     }
 

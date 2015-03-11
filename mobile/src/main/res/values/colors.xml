@@ -4,16 +4,19 @@
     <color name="clr_transparent">#00000000</color>
     <color name="clr_black">#ff000000</color>
     <color name="clr_white">#ffffffff</color>
-    <color name="clr_light_green">#ffC5E1A5</color>
+    <color name="clr_green_A700">#ff00C853</color>
+    <color name="clr_green_A100">#ffC5E1A5</color>
+    <color name="clr_pink_A400">#ffF50057</color>
 
     <color name="clr_divider">#26000000</color>
 
-    <color name="clr_shadow_start">#20000000</color>
+    <color name="clr_shadow_start">#40000000</color>
 
-    <color name="clr_settings_item_title">#cc000000</color>
-    <color name="clr_settings_divider_back">@color/clr_divider</color>
+    <color name="clr_btn_like_normal">@color/clr_green_A100</color>
+    <color name="clr_btn_like_pressed">@color/clr_green_A700</color>
+    <color name="clr_btn_like_checked">@color/clr_pink_A400</color>
 
-    <color name="clr_toolbar_background">#ff82b1ff</color>
-    <color name="clr_statusbar_background">#ff01579b</color>
+    <color name="clr_toolbar_background">@color/clr_green_A700</color>
+    <color name="clr_statusbar_background">@color/clr_green_A700</color>
 
 </resources>

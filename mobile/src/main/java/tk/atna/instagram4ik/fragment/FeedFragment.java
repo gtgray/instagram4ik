@@ -1,9 +1,7 @@
-package tk.atna.instagram4ik;
+package tk.atna.instagram4ik.fragment;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.Log;
@@ -14,8 +12,11 @@ import android.widget.ListView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import tk.atna.instagram4ik.ContentManager;
+import tk.atna.instagram4ik.R;
+import tk.atna.instagram4ik.adapter.FeedCursorAdapter;
 
-public class FeedFragment extends Fragment implements OnRefreshListener {
+public class FeedFragment extends BaseFragment implements OnRefreshListener {
 
     public static final String TAG = FeedFragment.class.getSimpleName();
 
@@ -29,7 +30,7 @@ public class FeedFragment extends Fragment implements OnRefreshListener {
     SwipeRefreshLayout swipeRefresh;
 
     @InjectView(R.id.feed_list)
-    ListView lvData;
+    ListView feedList;
 
     private int currItem;
 
@@ -49,27 +50,22 @@ public class FeedFragment extends Fragment implements OnRefreshListener {
         swipeRefresh.setOnRefreshListener(this);
 
         if(adapter == null)
-            adapter = new FeedCursorAdapter(inflater.getContext(), null, contentManager) {
-
-                @Override
-                public View newView(Context context, final Cursor cursor, ViewGroup parent) {
-                    View view = super.newView(context, cursor, parent);
-
-                    final ItemViewHolder holder = (ItemViewHolder) view.getTag();
-
-                    holder.btnImage.setOnClickListener(new View.OnClickListener() {
+            adapter = new FeedCursorAdapter(inflater.getContext(), null, contentManager,
+                    new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Log.d("myLogs", "---------- onClick: " + holder.btnLike.getTag());
+
+                            Log.d("myLogs", "---------- onClick: " + v.getTag());
+
+                            // call details fragment
+                            Bundle data = new Bundle();
+                            data.putString(MEDIA_ID, (String) v.getTag());
+                            makeFragmentAction(ACTION_MEDIA_DETAILS, data);
                         }
                     });
 
-                    return view;
-                }
-            };
-
-        lvData.setAdapter(adapter);
-        lvData.setSelection(currItem);
+        feedList.setAdapter(adapter);
+        feedList.setSelection(currItem);
 
         return view;
     }
@@ -80,23 +76,23 @@ public class FeedFragment extends Fragment implements OnRefreshListener {
 
         refreshFeed();
 
-        // fill the list if it is empty
-//        if(adapter.getCount() == 0)
-//            getList(state.hub, state.batch);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         // remember list position
-        currItem = lvData.getFirstVisiblePosition();
+        currItem = feedList.getFirstVisiblePosition();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        // cancel all current requests
-        flushCurrent();
+    protected void receiveAction(int action, Bundle data) {
+
+    }
+
+    @Override
+    protected int getTAG() {
+        return TAG.hashCode();
     }
 
     @Override
@@ -120,19 +116,10 @@ public class FeedFragment extends Fragment implements OnRefreshListener {
                     exception.printStackTrace();
                     return;
                 }
-                adapter.changeCursor(cursor);
+                if(adapter != null)
+                    adapter.changeCursor(cursor);
             }
         });
-
     }
 
-    private void flushCurrent() {
-//        int size = runningRequests.size();
-//        for(int i = 0; i < size; i++) {
-//            helper.cancelRequest(runningRequests.get(i));
-//        }
-//        helper.cancelAllImages();
-//        adapter.clear();
-
-    }
 }

@@ -6,13 +6,98 @@
     android:background="@color/clr_white"
     >
 
-    <ImageView
-        android:id="@+id/details_photo"
+    <LinearLayout
+        android:id="@+id/details_header_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:background="@drawable/ic_picture_default"
-        android:contentDescription="@string/app_name"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:id="@+id/details_header_image"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:background="@drawable/ic_picture_default"
+            android:contentDescription="@string/app_name"
+            />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:id="@+id/details_header_liked"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/liked"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:id="@+id/details_header_commented"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/commented"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:id="@+id/details_header_created"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/created"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:id="@+id/details_header_caption"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:text="@string/app_name"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:maxLines="5"
+                />
+
+        </LinearLayout>
+
+        <CheckedTextView
+            android:id="@+id/details_header_btn_like"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/slc_btn_like_state"
+            />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/details_header_likers"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginTop="8dp"
+        android:layout_below="@id/details_header_info"
+        android:padding="8dp"
+        android:text="@string/app_name"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:maxLines="3"
+        android:scrollHorizontally="true"
+        android:scrollbars="horizontal"
         />
 
     <TextView
@@ -24,7 +109,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        android:layout_below="@id/details_photo"
+        android:layout_below="@id/details_header_likers"
         android:text="@string/likes"
         android:textSize="16sp"
         android:gravity="center"

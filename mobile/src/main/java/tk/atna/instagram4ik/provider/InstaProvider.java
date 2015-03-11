@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
 public class InstaProvider extends ContentProvider {
@@ -16,6 +15,9 @@ public class InstaProvider extends ContentProvider {
     private static final String PATH_FEED = InstaContract.Feed.TABLE_FEED;
     private static final String PATH_FEED_ITEM = PATH_FEED + "/*";
     private static final String PATH_COMMENTS = InstaContract.Comments.TABLE_COMMENTS;
+    private static final String PATH_LIMIT = InstaContract.Comments.LIMIT;
+    private static final String PATH_COMMENTS_FEED_ITEM_LIMITED = PATH_COMMENTS + "/"
+                                                 + PATH_FEED + "/" + PATH_LIMIT + "/*";
     private static final String PATH_COMMENTS_FEED_ITEM = PATH_COMMENTS + "/" + PATH_FEED + "/*";
     private static final String PATH_LIKES = InstaContract.Likes.TABLE_LIKES;
     private static final String PATH_LIKES_FEED_ITEM = PATH_LIKES + "/" + PATH_FEED + "/*";
@@ -23,9 +25,10 @@ public class InstaProvider extends ContentProvider {
     private static final int MATCH_FEED = 0x00000011;
     private static final int MATCH_FEED_ITEM = 0x00000012;
     private static final int MATCH_COMMENTS = 0x00000013;
-    private static final int MATCH_COMMENTS_FEED_ITEM = 0x00000014;
-    private static final int MATCH_LIKES = 0x00000015;
-    private static final int MATCH_LIKES_FEED_ITEM = 0x00000016;
+    private static final int MATCH_COMMENTS_FEED_ITEM_LIMITED = 0x00000014;
+    private static final int MATCH_COMMENTS_FEED_ITEM = 0x00000015;
+    private static final int MATCH_LIKES = 0x00000016;
+    private static final int MATCH_LIKES_FEED_ITEM = 0x00000017;
 
     private InstaDB db;
 
@@ -36,6 +39,7 @@ public class InstaProvider extends ContentProvider {
         uriMatcher.addURI(AUTHORITY, PATH_FEED, MATCH_FEED);
         uriMatcher.addURI(AUTHORITY, PATH_FEED_ITEM, MATCH_FEED_ITEM);
         uriMatcher.addURI(AUTHORITY, PATH_COMMENTS, MATCH_COMMENTS);
+        uriMatcher.addURI(AUTHORITY, PATH_COMMENTS_FEED_ITEM_LIMITED, MATCH_COMMENTS_FEED_ITEM_LIMITED);
         uriMatcher.addURI(AUTHORITY, PATH_COMMENTS_FEED_ITEM, MATCH_COMMENTS_FEED_ITEM);
         uriMatcher.addURI(AUTHORITY, PATH_LIKES, MATCH_LIKES);
         uriMatcher.addURI(AUTHORITY, PATH_LIKES_FEED_ITEM, MATCH_LIKES_FEED_ITEM);
@@ -51,51 +55,42 @@ public class InstaProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder) {
-
-        Cursor cursor;
-        String where;
-
-        SQLiteQueryBuilder qBuilder = new SQLiteQueryBuilder();
+        String table;
+        String where = null;
+        String limit = null;
 
         switch (uriMatcher.match(uri)) {
 
-            // feed with medias 5 times commented
+            // feed with medias
             case MATCH_FEED:
-                String query = "SELECT * FROM ("
-                        + "    SELECT * FROM feed INNER JOIN comments"
-                        + "    ON (feed.media_id = comments.media_id)"
-                        + ") AS feed_comments "
-                        + "WHERE feed_comments.comment_id IN ("
-                        + "    SELECT comments.comment_id FROM comments"
-                        + "    WHERE comments.media_id = feed_comments.media_id"
-//                        + "    AND comments.text IS NOT NULL"
-                        + "    ORDER BY comments.comment_created_time DESC"
-                        + "    LIMIT " + InstaContract.Feed.LIMIT_COMMENTS_PER_MEDIA
-                        + ") "
-                        + "ORDER BY feed_comments.created_time DESC";
-
-                cursor = db.getWritableDatabase().rawQuery(query, null);
-                cursor.setNotificationUri(getContext().getContentResolver(), uri);
-                return cursor;
-
+                table = InstaContract.Feed.TABLE_FEED;
                 sortOrder = InstaContract.Feed.FEED_CREATED + " DESC";
+                break;
 
             // common info about media with id #
             case MATCH_FEED_ITEM:
-                qBuilder.setTables(InstaContract.Feed.TABLE_FEED);
+                table = InstaContract.Feed.TABLE_FEED;
                 where = InstaContract.Feed.FEED_MEDIA_ID + " = '" + uri.getLastPathSegment() + "'";
                 break;
 
-            // only comments for media with id #
+            // limited number of comments for media with id #
+            case MATCH_COMMENTS_FEED_ITEM_LIMITED:
+                table = InstaContract.Comments.TABLE_COMMENTS;
+                where = InstaContract.Comments.COMMENTS_MEDIA_ID + " = '" + uri.getLastPathSegment() + "'";
+                sortOrder = InstaContract.Comments.COMMENTS_COMMENT_CREATED + " DESC";
+                limit = InstaContract.Comments.LIMIT_COMMENTS_PER_MEDIA;
+                break;
+
+            // comments for media with id #
             case MATCH_COMMENTS_FEED_ITEM:
-                qBuilder.setTables(InstaContract.Comments.TABLE_COMMENTS);
+                table = InstaContract.Comments.TABLE_COMMENTS;
                 where = InstaContract.Comments.COMMENTS_MEDIA_ID + " = '" + uri.getLastPathSegment() + "'";
                 sortOrder = InstaContract.Comments.COMMENTS_COMMENT_CREATED + " DESC";
                 break;
 
-            // only likes for media with id #
+            // likes for media with id #
             case MATCH_LIKES_FEED_ITEM:
-                qBuilder.setTables(InstaContract.Likes.TABLE_LIKES);
+                table = InstaContract.Likes.TABLE_LIKES;
                 where = InstaContract.Likes.LIKES_MEDIA_ID + " = '" + uri.getLastPathSegment() + "'";
                 break;
 
@@ -103,43 +98,12 @@ public class InstaProvider extends ContentProvider {
                 return null;
         }
 
-        qBuilder.appendWhere(where);
-        cursor = qBuilder.query(db.getWritableDatabase(), projection, selection,
-                                selectionArgs, null, null, sortOrder);
+        Cursor cursor = db.getWritableDatabase().query(table, null, where, null, null, null,
+                                                        sortOrder, limit);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
         return cursor;
     }
-
-/*
-
-SELECT a.* FROM articles AS a
-  LEFT JOIN articles AS a2
-    ON a.section = a2.section AND a.article_date <= a2.article_date
-GROUP BY a.article_id
-HAVING COUNT(*) <= 10;
-
---------------------------
-select pos, name , schoole, count(school) as teamSize
-from tableName
-where teamSize = 4
-groupby(school)
-
-----------------------
-SELECT * FROM (
-    SELECT * FROM BOOK, AUTHOR
-    WHERE BOOK.AUTHORID = AUTHOR.AUTHORID
-) T1
-WHERE T1.BOOKID IN (
-    SELECT T2.BOOKID FROM BOOK T2
-    WHERE T2.AUTHORID = T1.AUTHORID
-    ORDER BY T2.BOOKTITLE
-    LIMIT 2
-)
-ORDER BY T1.BOOKTITLE
-
- */
-
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
@@ -148,6 +112,7 @@ ORDER BY T1.BOOKTITLE
         switch (uriMatcher.match(uri)) {
             case MATCH_FEED:
             case MATCH_COMMENTS:
+            case MATCH_COMMENTS_FEED_ITEM_LIMITED:
             case MATCH_LIKES:
             default:
                 throw new UnsupportedOperationException("Unknown insert uri: " + uri);
@@ -196,19 +161,23 @@ ORDER BY T1.BOOKTITLE
 
             case MATCH_FEED_ITEM:
                 table = InstaContract.Feed.TABLE_FEED;
-                where = InstaContract.Feed.FEED_MEDIA_ID + " = '" + uri.getLastPathSegment() + "'";
+                where = InstaContract.Feed.FEED_MEDIA_ID + " = '"
+                        + uri.getLastPathSegment() + "'";
                 break;
 
             case MATCH_COMMENTS_FEED_ITEM:
                 table = InstaContract.Comments.TABLE_COMMENTS;
-                where = InstaContract.Comments.COMMENTS_MEDIA_ID + " = '" + uri.getLastPathSegment() + "'";
+                where = InstaContract.Comments.COMMENTS_MEDIA_ID + " = '"
+                        + uri.getLastPathSegment() + "'";
                 break;
 
             case MATCH_LIKES_FEED_ITEM:
                 table = InstaContract.Likes.TABLE_LIKES;
-                where = InstaContract.Likes.LIKES_MEDIA_ID + " = '" + uri.getLastPathSegment() + "'";
+                where = InstaContract.Likes.LIKES_MEDIA_ID + " = '"
+                        + uri.getLastPathSegment() + "'";
                 break;
 
+            case MATCH_COMMENTS_FEED_ITEM_LIMITED:
             default:
                 throw new UnsupportedOperationException("Unknown delete uri: " + uri);
         }
@@ -216,7 +185,7 @@ ORDER BY T1.BOOKTITLE
         selection = (selection == null || selection.length() == 0)
                 ? where : selection + " AND " + where;
 
-        int count = dBase.delete(table, selection, selectionArgs);
+        int count = dBase.delete(table, selection, null);
         notifyChange(uri);
 
         return count;
@@ -224,20 +193,32 @@ ORDER BY T1.BOOKTITLE
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        String where = null;
+
         switch (uriMatcher.match(uri)) {
             case MATCH_FEED:
             case MATCH_COMMENTS:
+            case MATCH_COMMENTS_FEED_ITEM_LIMITED:
             case MATCH_LIKES:
             default:
                 throw new UnsupportedOperationException("Unknown update uri: " + uri);
 
             case MATCH_FEED_ITEM:
+                break;
+
             case MATCH_COMMENTS_FEED_ITEM:
+                where = InstaContract.Comments.COMMENTS_COMMENT_ID + " = '"
+                        + values.getAsString(InstaContract.Comments.COMMENTS_COMMENT_ID) + "'";
+                break;
+
             case MATCH_LIKES_FEED_ITEM:
-                int rows = delete(uri, null, null);
-                insert(uri, values);
-                return rows;
+                where = InstaContract.Likes.LIKES_USERNAME + " = '"
+                        + values.getAsString(InstaContract.Likes.LIKES_USERNAME) + "'";
+                break;
         }
+            int rows = delete(uri, where, null);
+            insert(uri, values);
+            return rows;
     }
 
     @Override
@@ -251,6 +232,9 @@ ORDER BY T1.BOOKTITLE
                 return InstaContract.Feed.CONTENT_ITEM_TYPE;
 
             case MATCH_COMMENTS:
+                return InstaContract.Comments.CONTENT_TYPE;
+
+            case MATCH_COMMENTS_FEED_ITEM_LIMITED:
                 return InstaContract.Comments.CONTENT_TYPE;
 
             case MATCH_COMMENTS_FEED_ITEM:

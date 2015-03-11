@@ -129,7 +129,11 @@ public class ContentManager {
                     for(Envelope.Media.Comments.Comment comment : media.comments.data) {
                         ContentMapper.pushCommentToProvider(contentResolver, media.id, comment);
                     }
+
+//                        Log.d("myLogs", "---------- NUMBER: " + media.comments.data.size());
                 }
+
+//                        Log.d("myLogs", "---------- NUMBER: " + envelop.data.size());
             }
         }).execute(null);
     }
@@ -157,12 +161,36 @@ public class ContentManager {
         });
     }
 
-    private void pullCommentsFromCache(final ContentCallback<Cursor> callback) {
+    public void pullLimitedCommentsFromCache(final String mediaId,
+                                              final ContentCallback<Cursor> callback) {
+        (new Worker.WorkTask<Cursor>() {
+            @Override
+            public void run() {
+                this.result = contentResolver.query(Uri.withAppendedPath(
+                                InstaContract.Comments.CONTENT_URI_LIMITED, mediaId),
+                                                    null, null, null, null);
+            }
+        }).execute(new Worker.TaskCallback<Cursor>() {
+            @Override
+            public void onComplete(Cursor result, Exception ex) {
+                callback.onResult(result, ex);
+            }
+        });
+    }
+
+    public void getComments(String mediaId, ContentCallback<Cursor> callback) {
+        pullCommentsFromCache(mediaId, callback);
+        loadComments(mediaId);
+    }
+
+    private void pullCommentsFromCache(final String mediaId,
+                                       final ContentCallback<Cursor> callback) {
 
         (new Worker.WorkTask<Cursor>() {
             @Override
             public void run() {
-                this.result = contentResolver.query(InstaContract.Comments.CONTENT_URI,
+                this.result = contentResolver.query(Uri.withAppendedPath(
+                                InstaContract.Comments.CONTENT_URI, mediaId),
                                                     null, null, null, null);
             }
         }).execute(new Worker.TaskCallback<Cursor>() {
@@ -187,11 +215,18 @@ public class ContentManager {
         }).execute(null);
     }
 
-    public void pullLikesFromCache(final ContentCallback<Cursor> callback) {
+    public void getLikes(String mediaId, ContentCallback<Cursor> callback) {
+        pullLikesFromCache(mediaId, callback);
+        loadLikes(mediaId);
+    }
+
+    public void pullLikesFromCache(final String mediaId,
+                                   final ContentCallback<Cursor> callback) {
         (new Worker.WorkTask<Cursor>() {
             @Override
             public void run() {
-                this.result = contentResolver.query(InstaContract.Likes.CONTENT_URI,
+                this.result = contentResolver.query(Uri.withAppendedPath(
+                                InstaContract.Likes.CONTENT_URI, mediaId),
                                                     null, null, null, null);
             }
         }).execute(new Worker.TaskCallback<Cursor>() {
@@ -230,8 +265,8 @@ public class ContentManager {
         contentResolver.notifyChange(InstaContract.Feed.CONTENT_URI, null);
     }
 
-    public void getMediaImage(String url, ImageView view) {
-        httpHelper.getMediaImage(url, view);
+    public void getImage(String url, ImageView view) {
+        httpHelper.loadImage(url, view);
     }
 
     public boolean cancelRequest(int id) {

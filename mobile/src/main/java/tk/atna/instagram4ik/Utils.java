@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v4.app.DialogFragment;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -19,7 +19,7 @@ import java.util.GregorianCalendar;
 import java.util.SimpleTimeZone;
 
 /**
- * Class that contains instrumental methods
+ * Class that contains various instrumental methods
  */
 public class Utils {
 
@@ -35,16 +35,16 @@ public class Utils {
      * @param fm link to fragment manager
      * @param container resource to park fragment to
      * @param clazz type of fragment to park
-     * @param inited if fragment is needed to be initialized
-     * @param backstacked if fragment is needed to be added to BackStack
+     * @param initData data to init fragment with
+     * @param backstacked if fragment is needed to be added to backstack
      * @param <T> child of Fragment class
      */
     public static <T extends Fragment> T parkFragment(FragmentManager fm, int container,
-                                                         Class<T> clazz, boolean inited,
+                                                         Class<T> clazz, Bundle initData,
                                                          boolean backstacked) {
         Fragment fragment = findFragment(fm, clazz);
         if (fragment == null) {
-            fragment = inited ? initFragment(clazz) : createFragment(clazz);
+            fragment = initFragment(clazz, initData);
 
             String tag = findTag(clazz);
 
@@ -88,24 +88,6 @@ public class Utils {
     }
 
     /**
-     * Shows dialog fragment of type clazz initialized with initData (or not, optional)
-     *
-     * @param fm link to fragment manager
-     * @param clazz type of dialog fragment to show
-     * @param <T> child of dialog fragment class
-     */
-    public static <T extends DialogFragment> void showDialog(FragmentManager fm, Class<T> clazz) {
-        DialogFragment dialog = findFragment(fm, clazz);
-        if (dialog == null) {
-            dialog = initFragment(clazz);
-
-        } else
-            dialog.dismiss();
-
-        dialog.show(fm, findTag(clazz));
-    }
-
-    /**
      *  Searches for static field TAG in clazz type
      *
      * @param clazz type of fragment to find tag for
@@ -131,39 +113,30 @@ public class Utils {
     }
 
     /**
-     * Creates fragment of type clazz
-     *
-     * @param clazz type of fragment to create
-     * @param <T> child of Fragment class
-     * @return created fragment or null
-     */
-    private static <T extends Fragment> T createFragment(Class<T> clazz) {
-
-        try {
-            return clazz.newInstance();
-
-        } catch (ClassCastException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
      * Tries to initialize fragment of type clazz by one of three methods:
      * init(Class, Bundle), init(Bundle), init().
      *
      * @param clazz type of fragment to initialize
+     * @param data data to initialize fragment with
      * @param <T> child of Fragment class
      * @return initialized fragment or null
      */
-    private static <T extends Fragment> T initFragment(Class<T> clazz) {
+    private static <T extends Fragment> T initFragment(Class<T> clazz, Bundle data) {
 
         final String INIT = "newInstance";
 
         try {
-            Method init = clazz.getMethod(INIT);
-            Object fragment = init.invoke(null);
+            Method init;
+            Object fragment;
 
+            if (data != null) {
+                init = clazz.getMethod(INIT, Bundle.class);
+                fragment = init.invoke(null, data);
+
+            } else {
+                init = clazz.getMethod(INIT);
+                fragment = init.invoke(null);
+            }
             return clazz.cast(fragment);
 
         } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException
@@ -183,6 +156,10 @@ public class Utils {
         NetworkInfo ni = cm.getActiveNetworkInfo();
         // default network is presented and it is able to connect through and it is connected now
         return (ni != null) && ni.isAvailable() && ni.isConnected();
+    }
+
+    public static String formatTime(String secs) {
+        return Utils.millisToLocalDate(Long.valueOf(secs) * 1000, Utils.FULL_TIMESTAMP_FORMAT);
     }
 
     public static String millisToLocalDate(long millis, String format) {

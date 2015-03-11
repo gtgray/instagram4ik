@@ -134,13 +134,15 @@ public class HttpHelper {
         api.getLikesAsync(token, mediaId, new Callback<Envelope.Media.Likes>() {
             @Override
             public void success(Envelope.Media.Likes likes, Response response) {
-                callback.onResult(likes, null);
+                if(callback != null)
+                    callback.onResult(likes, null);
             }
 
             @Override
             public void failure(RetrofitError error) {
                 error.printStackTrace();
-                callback.onResult(null, error);
+                if(callback != null)
+                    callback.onResult(null, error);
             }
         });
 
@@ -158,13 +160,15 @@ public class HttpHelper {
         api.likeAsync(token, mediaId, new Callback<Envelope.Media.Likes>() {
             @Override
             public void success(Envelope.Media.Likes likes, Response response) {
-                callback.onResult(likes, null);
+                if(callback != null)
+                    callback.onResult(likes, null);
             }
 
             @Override
             public void failure(RetrofitError error) {
                 error.printStackTrace();
-                callback.onResult(null, error);
+                if(callback != null)
+                    callback.onResult(null, error);
             }
         });
 
@@ -182,26 +186,28 @@ public class HttpHelper {
         api.unlikeAsync(token, mediaId, new Callback<Envelope.Media.Likes>() {
             @Override
             public void success(Envelope.Media.Likes likes, Response response) {
-                callback.onResult(likes, null);
+                if(callback != null)
+                    callback.onResult(likes, null);
             }
 
             @Override
             public void failure(RetrofitError error) {
                 error.printStackTrace();
-                callback.onResult(null, error);
+                if(callback != null)
+                    callback.onResult(null, error);
             }
         });
 
         return 0;
     }
 
-    public void getMediaImage(String url, ImageView view) {
+    public void loadImage(String url, ImageView view) {
 
         Picasso.with(context)
-                .load(url)
-                .placeholder(DEFAULT_PICTURE)
-                .error(DEFAULT_PICTURE)
-                .into(view);
+               .load(url)
+               .placeholder(DEFAULT_PICTURE)
+               .error(DEFAULT_PICTURE)
+               .into(view);
     }
 
 

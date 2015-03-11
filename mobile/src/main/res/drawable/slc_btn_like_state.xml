@@ -2,13 +2,13 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:state_pressed="true"
-        android:drawable="@drawable/ic_like_pressed" >
+        android:drawable="@drawable/drw_btn_like_pressed" >
     </item>
     <item
         android:state_checked="true"
-        android:drawable="@drawable/ic_like_checked" >
+        android:drawable="@drawable/drw_btn_like_checked" >
     </item>
     <item
-        android:drawable="@drawable/ic_like_normal" >
+        android:drawable="@drawable/drw_btn_like_normal" >
     </item>
 </selector>

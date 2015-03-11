@@ -19,8 +19,6 @@ public final class InstaContract {
 
     public static class Feed {
 
-        public static final String LIMIT_COMMENTS_PER_MEDIA = "5";
-
         public static final String DEFAULT_MEDIA_TYPE = "image";
 
         public static final String TABLE_FEED = "feed";
@@ -45,6 +43,9 @@ public final class InstaContract {
 
     public static class Comments {
 
+        public static final String LIMIT_COMMENTS_PER_MEDIA = "5";
+        public static final String LIMIT = "limit";
+
         public static final String TABLE_COMMENTS = "comments";
         public static final String COMMENTS_ID = "_id";
         public static final String COMMENTS_MEDIA_ID = "media_id";
@@ -59,6 +60,10 @@ public final class InstaContract {
 
         public static final Uri CONTENT_URI = InstaContract.BASE_CONTENT_URI
                 .buildUpon().appendPath(TABLE_COMMENTS).appendPath(Feed.TABLE_FEED).build();
+
+        public static final Uri CONTENT_URI_LIMITED = InstaContract.BASE_CONTENT_URI
+                .buildUpon().appendPath(TABLE_COMMENTS).appendPath(Feed.TABLE_FEED)
+                .appendPath(LIMIT).build();
 
     }
 

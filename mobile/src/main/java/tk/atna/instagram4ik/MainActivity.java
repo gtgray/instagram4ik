@@ -10,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import tk.atna.instagram4ik.fragment.FeedFragment;
+
 
 public class MainActivity extends ActionBarActivity {
 
