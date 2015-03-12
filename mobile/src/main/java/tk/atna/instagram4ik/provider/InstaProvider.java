@@ -39,7 +39,8 @@ public class InstaProvider extends ContentProvider {
         uriMatcher.addURI(AUTHORITY, PATH_FEED, MATCH_FEED);
         uriMatcher.addURI(AUTHORITY, PATH_FEED_ITEM, MATCH_FEED_ITEM);
         uriMatcher.addURI(AUTHORITY, PATH_COMMENTS, MATCH_COMMENTS);
-        uriMatcher.addURI(AUTHORITY, PATH_COMMENTS_FEED_ITEM_LIMITED, MATCH_COMMENTS_FEED_ITEM_LIMITED);
+        uriMatcher.addURI(AUTHORITY, PATH_COMMENTS_FEED_ITEM_LIMITED,
+                          MATCH_COMMENTS_FEED_ITEM_LIMITED);
         uriMatcher.addURI(AUTHORITY, PATH_COMMENTS_FEED_ITEM, MATCH_COMMENTS_FEED_ITEM);
         uriMatcher.addURI(AUTHORITY, PATH_LIKES, MATCH_LIKES);
         uriMatcher.addURI(AUTHORITY, PATH_LIKES_FEED_ITEM, MATCH_LIKES_FEED_ITEM);
@@ -70,13 +71,15 @@ public class InstaProvider extends ContentProvider {
             // common info about media with id #
             case MATCH_FEED_ITEM:
                 table = InstaContract.Feed.TABLE_FEED;
-                where = InstaContract.Feed.FEED_MEDIA_ID + " = '" + uri.getLastPathSegment() + "'";
+                where = InstaContract.Feed.FEED_MEDIA_ID + " = '"
+                        + uri.getLastPathSegment() + "'";
                 break;
 
             // limited number of comments for media with id #
             case MATCH_COMMENTS_FEED_ITEM_LIMITED:
                 table = InstaContract.Comments.TABLE_COMMENTS;
-                where = InstaContract.Comments.COMMENTS_MEDIA_ID + " = '" + uri.getLastPathSegment() + "'";
+                where = InstaContract.Comments.COMMENTS_MEDIA_ID + " = '"
+                        + uri.getLastPathSegment() + "'";
                 sortOrder = InstaContract.Comments.COMMENTS_COMMENT_CREATED + " DESC";
                 limit = InstaContract.Comments.LIMIT_COMMENTS_PER_MEDIA;
                 break;
@@ -84,14 +87,16 @@ public class InstaProvider extends ContentProvider {
             // comments for media with id #
             case MATCH_COMMENTS_FEED_ITEM:
                 table = InstaContract.Comments.TABLE_COMMENTS;
-                where = InstaContract.Comments.COMMENTS_MEDIA_ID + " = '" + uri.getLastPathSegment() + "'";
+                where = InstaContract.Comments.COMMENTS_MEDIA_ID + " = '"
+                        + uri.getLastPathSegment() + "'";
                 sortOrder = InstaContract.Comments.COMMENTS_COMMENT_CREATED + " DESC";
                 break;
 
             // likes for media with id #
             case MATCH_LIKES_FEED_ITEM:
                 table = InstaContract.Likes.TABLE_LIKES;
-                where = InstaContract.Likes.LIKES_MEDIA_ID + " = '" + uri.getLastPathSegment() + "'";
+                where = InstaContract.Likes.LIKES_MEDIA_ID + " = '"
+                        + uri.getLastPathSegment() + "'";
                 break;
 
             default:
@@ -132,7 +137,7 @@ public class InstaProvider extends ContentProvider {
 
         // insert row
         long row = db.getWritableDatabase().insert(table, null, values);
-        notifyChange(uri);
+//        notifyChange(uri);
 
         return ContentUris.withAppendedId(uri, row);
     }
@@ -186,7 +191,7 @@ public class InstaProvider extends ContentProvider {
                 ? where : selection + " AND " + where;
 
         int count = dBase.delete(table, selection, null);
-        notifyChange(uri);
+//        notifyChange(uri);
 
         return count;
     }
@@ -218,6 +223,7 @@ public class InstaProvider extends ContentProvider {
         }
             int rows = delete(uri, where, null);
             insert(uri, values);
+            notifyChange(uri);
             return rows;
     }
 

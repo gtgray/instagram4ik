@@ -1,6 +1,5 @@
 package tk.atna.instagram4ik;
 
-import retrofit.Callback;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.POST;
@@ -44,6 +43,7 @@ interface ServerApi {
 //    static final String ACCESS_DENIED = "access_denied";
 
     static final String CONTENT_FEED_ENDPOINT = "/v1/users/self/feed";
+    static final String CONTENT_MEDIA_ENDPOINT = "/v1/media/{media-id}";
     static final String CONTENT_COMMENTS_ENDPOINT = "/v1/media/{media-id}/comments";
     static final String CONTENT_LIKES_ENDPOINT = "/v1/media/{media-id}/likes";
 
@@ -56,7 +56,17 @@ interface ServerApi {
 
     static final String DEFAULT_COUNT = "10";
 
-
+    /**
+     * Instagram server api call
+     * GET https://api.instagram.com/v1/users/self/feed?access_token=ACCESS-TOKEN
+     * &count=COUNT&min_id=MIN_ID&max_id=MAX_ID
+     *
+     * @param token access_token
+     * @param count count
+     * @param minId min_id
+     * @param maxId max_id
+     * @return feed model object
+     */
     @GET(CONTENT_FEED_ENDPOINT)
     Envelope getFeed(
             @Query(ACCESS_TOKEN) String token,
@@ -65,55 +75,74 @@ interface ServerApi {
             @Query(MAX_ID) String maxId
     );
 
-    @GET(CONTENT_FEED_ENDPOINT)
-    void getFeedAsync(
+    /**
+     * Instagram server api call
+     * GET https://api.instagram.com/v1/media/{media-id}?access_token=ACCESS-TOKEN
+     *
+     * @param token access_token
+     * @param mediaId media-id
+     * @return single media model object
+     */
+    @GET(CONTENT_MEDIA_ENDPOINT)
+    Envelope.SingleMedia getMedia(
             @Query(ACCESS_TOKEN) String token,
-            @Query(COUNT) String count,
-            @Query(MIN_ID) String minId,
-            @Query(MAX_ID) String maxId,
-            Callback<Envelope> callback
+            @Path(MEDIA_ID) String mediaId
     );
 
+    /**
+     * Instagram server api call
+     * GET https://api.instagram.com/v1/media/{media-id}/comments?access_token=ACCESS-TOKEN
+     *
+     * @param token access_token
+     * @param mediaId media-id
+     * @return list of media comments model object
+     */
     @GET(CONTENT_COMMENTS_ENDPOINT)
     Envelope.Media.Comments getComments(
             @Query(ACCESS_TOKEN) String token,
             @Path(MEDIA_ID) String mediaId
     );
 
-    @GET(CONTENT_COMMENTS_ENDPOINT)
-    void getCommentsAsync(
-            @Query(ACCESS_TOKEN) String token,
-            @Path(MEDIA_ID) String mediaId,
-            Callback<Envelope.Media.Comments> callback
-    );
-
+    /**
+     * Instagram server api call
+     * GET https://api.instagram.com/v1/media/{media-id}/likes?access_token=ACCESS-TOKEN
+     *
+     * @param token access_token
+     * @param mediaId media-id
+     * @return list of media likes model object
+     */
     @GET(CONTENT_LIKES_ENDPOINT)
     Envelope.Media.Likes getLikes(
             @Query(ACCESS_TOKEN) String token,
             @Path(MEDIA_ID) String mediaId
     );
 
-    @GET(CONTENT_LIKES_ENDPOINT)
-    void getLikesAsync(
-            @Query(ACCESS_TOKEN) String token,
-            @Path(MEDIA_ID) String mediaId,
-            Callback<Envelope.Media.Likes> callback
-    );
-
+    /**
+     * Instagram server api call
+     * POST https://api.instagram.com/v1/media/{media-id}/likes?access_token=ACCESS-TOKEN
+     *
+     * @param token access_token
+     * @param mediaId media-id
+     * @return empty list of media likes model object
+     */
     @POST(CONTENT_LIKES_ENDPOINT)
-    void likeAsync(
+    Envelope.Media.Likes like(
             @Query(ACCESS_TOKEN) String token,
-            @Path(MEDIA_ID) String mediaId,
-            Callback<Envelope.Media.Likes> callback
+            @Path(MEDIA_ID) String mediaId
     );
 
+    /**
+     * Instagram server api call
+     * DELETE https://api.instagram.com/v1/media/{media-id}/likes?access_token=ACCESS-TOKEN
+     *
+     * @param token access_token
+     * @param mediaId media-id
+     * @return empty list of media likes model object
+     */
     @DELETE(CONTENT_LIKES_ENDPOINT)
-    void unlikeAsync(
+    Envelope.Media.Likes unlike(
             @Query(ACCESS_TOKEN) String token,
-            @Path(MEDIA_ID) String mediaId,
-            Callback<Envelope.Media.Likes> callback
+            @Path(MEDIA_ID) String mediaId
     );
-
-
 
 }

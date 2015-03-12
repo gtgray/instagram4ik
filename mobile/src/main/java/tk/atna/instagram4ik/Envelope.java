@@ -8,7 +8,6 @@ public class Envelope {
 
     Meta meta;
     List<Media> data;
-    Pagination pagination;
 
 
     static class Meta {
@@ -22,14 +21,12 @@ public class Envelope {
         String errorMessage;
     }
 
-    static class Pagination {
 
-        @SerializedName("next_url")
-        String nextUrl;
-
-        @SerializedName("next_max_id")
-        String nextMaxId;
+    static class SingleMedia {
+        Meta meta;
+        Media data;
     }
+
 
     static class Media {
 

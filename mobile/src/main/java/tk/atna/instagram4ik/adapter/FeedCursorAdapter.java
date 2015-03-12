@@ -50,8 +50,6 @@ public class FeedCursorAdapter extends CursorAdapter {
 
         rememberColumns(cursor);
 
-//        created_time: "1425851681" * 1000 = time in millis
-
     }
 
     @Override
@@ -85,26 +83,33 @@ public class FeedCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         ItemViewHolder holder = (ItemViewHolder) view.getTag();
 
-        contentManager.getImage(cursor.getString(imageIndex), holder.btnImage);
-        holder.btnImage.setTag(cursor.getString(mediaIdIndex));
+        if(cursor != null && !cursor.isClosed()) {
+            contentManager.getImage(cursor.getString(imageIndex), holder.btnImage);
+            holder.btnImage.setTag(cursor.getString(mediaIdIndex));
 
-        holder.tvCommented.setText(context.getString(R.string.commented)
-                + cursor.getString(commentedIndex));
-        holder.tvLiked.setText(context.getString(R.string.liked)
-                + cursor.getString(likedIndex));
-        holder.tvCreated.setText(context.getString(R.string.created)
-                + Utils.formatTime(cursor.getString(createdIndex)));
+            holder.tvCommented.setText(context.getString(R.string.commented)
+                    + cursor.getString(commentedIndex));
+            holder.tvLiked.setText(context.getString(R.string.liked)
+                    + cursor.getString(likedIndex));
+            holder.tvCreated.setText(context.getString(R.string.created)
+                    + Utils.formatTime(cursor.getString(createdIndex)));
 
-        String caption = cursor.getString(captionIndex);
-        holder.tvCaption.setText(caption);
-        holder.tvCaption.setVisibility((caption != null && caption.length() > 0)
-                ? View.VISIBLE : View.GONE);
+            String caption = cursor.getString(captionIndex);
+            holder.tvCaption.setText(caption);
+            holder.tvCaption.setVisibility((caption != null && caption.length() > 0)
+                    ? View.VISIBLE : View.GONE);
 
-        holder.btnLike.setChecked(cursor.getInt(myLikeIndex) > 0);
-//        holder.btnLike.setTag(cursor.getString(mediaIdIndex));
+            holder.btnLike.setChecked(cursor.getInt(myLikeIndex) > 0);
+            //        holder.btnLike.setTag(cursor.getString(mediaIdIndex));
 
-        populateLimitedComments(holder.llComments, cursor.getString(mediaIdIndex));
+            populateLimitedComments(holder.llComments, cursor.getString(mediaIdIndex));
 
+            // load next page
+            int position = cursor.getPosition();
+            if(position > 0 && position > getCount() - 3)
+                contentManager.getFeedLater(getLastMediaId());
+
+        }
     }
 
     @Override
@@ -114,6 +119,35 @@ public class FeedCursorAdapter extends CursorAdapter {
         rememberColumns(cursor);
     }
 
+    /**
+     * Gets id of the first media in list
+     *
+     * @return first media id
+     */
+    public String getFirstMediaId() {
+        if(getCursor().moveToFirst()) {
+            return getCursor().getString(mediaIdIndex);
+        }
+        return null;
+    }
+
+    /**
+     * Gets id of the last media in list
+     *
+     * @return last media id
+     */
+    public String getLastMediaId() {
+        if(getCursor().moveToLast()) {
+            return getCursor().getString(mediaIdIndex);
+        }
+        return null;
+    }
+
+    /**
+     * Remembers cursor column indexes for future reuse
+     *
+     * @param cursor cursor whose columns
+     */
     private void rememberColumns(Cursor cursor) {
         if(cursor == null)
             return;
@@ -127,6 +161,12 @@ public class FeedCursorAdapter extends CursorAdapter {
         this.captionIndex = cursor.getColumnIndex(InstaContract.Feed.FEED_CAPTION);
     }
 
+    /**
+     * Inflates block of few comments for each media item in the list
+     *
+     * @param container parent view group for comment view, created in code
+     * @param mediaId id of commented media
+     */
     private void populateLimitedComments(final ViewGroup container, String mediaId) {
         contentManager.pullLimitedCommentsFromCache(mediaId,
                                                     new ContentManager.ContentCallback<Cursor>() {
@@ -150,7 +190,7 @@ public class FeedCursorAdapter extends CursorAdapter {
                                 tvComment.setText(mixComment(result));
                                 container.addView(tvComment);
 
-                            } while (result.moveToNext());
+                            } while(result.moveToNext());
 
                             result.close();
                         }
@@ -158,6 +198,12 @@ public class FeedCursorAdapter extends CursorAdapter {
                 });
     }
 
+    /**
+     * Represents comment text, username and time created as one string
+     *
+     * @param cursor cursor to take data from
+     * @return mix string
+     */
     private String mixComment(Cursor cursor) {
         String mix;
         String created = Utils.formatTime(cursor.getString(commentCreatedIndex));
@@ -167,7 +213,9 @@ public class FeedCursorAdapter extends CursorAdapter {
         return "[" + created + "] " + username + ": '" + text + "'";
     }
 
-
+    /**
+     * View holder class for list view items
+     */
     class ItemViewHolder {
 
         @InjectView(R.id.feed_item_image)

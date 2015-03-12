@@ -6,79 +6,72 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
-import retrofit.Callback;
 import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 public class HttpHelper {
 
-
     private final static int DEFAULT_PICTURE = R.drawable.ic_picture_default;
-
-    public final static String NETWORK_DOWN = "Network is unavailable at the moment";
-    public final static int KEY = R.string.client_id;
 
     private ServerApi api;
 
     private final Context context;
 
-//    private SparseArray<Future> currentRequests;
-//    private SparseArray<ImageViewFuture> currentIconRequests;
-
-    private String key;
-
 
     public HttpHelper(Context context) {
         this.context = context;
-//        this.currentRequests = new SparseArray<>();
-//        this.currentIconRequests = new SparseArray<>();
-
-        this.key = context.getString(KEY);
-
+        // setup retrofit
         RestAdapter ra = new RestAdapter.Builder()
                 .setEndpoint(ServerApi.SERVER_URL)
-                .setLogLevel(RestAdapter.LogLevel.FULL)
+//                .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
-
+        // retrofit server api inflater
         api = ra.create(ServerApi.class);
-
     }
 
+    /**
+     * Makes instagram server api call to get medias feed
+     * for user with token
+     *
+     * @param token instagram user access token
+     * @param minId min media id to load later medias
+     * @param maxId max media id to load earlier medias
+     * @return user's feed model object (parsed from json)
+     */
     public Envelope getFeed(String token, String minId, String maxId) {
-        if(token == null) {
+        if(token == null)
             throw new IllegalArgumentException("Token can't be null");
-        }
 
         return api.getFeed(token, ServerApi.DEFAULT_COUNT,
                             minId == null ? "" : minId,
                             maxId == null ? "" : maxId);
     }
 
-    public int getFeedAsync(String token, String minId, String maxId,
-                            final HttpCallback<Envelope> callback) {
+    /**
+     * Makes instagram server api call to get data about media
+     * with id using user with token
+     *
+     * @param token instagram user access token
+     * @param mediaId id of media to get
+     * @return single media model object (parsed from json)
+     */
+    public Envelope.SingleMedia getMedia(String token, String mediaId) {
         if(token == null)
             throw new IllegalArgumentException("Token can't be null");
 
-        api.getFeedAsync(token, ServerApi.DEFAULT_COUNT,
-                          minId == null ? "" : minId,
-                          maxId == null ? "" : maxId,
-                          new Callback<Envelope>() {
-            @Override
-            public void success(Envelope envelope, Response response) {
-                callback.onResult(envelope, null);
-            }
+        if(mediaId == null)
+            throw new IllegalArgumentException("Media id can't be null");
 
-            @Override
-            public void failure(RetrofitError error) {
-                error.printStackTrace();
-                callback.onResult(null, error);
-            }
-        });
-
-        return 0;
+        return api.getMedia(token, mediaId);
     }
 
+    /**
+     * Makes instagram server api call to get list of comments
+     * for media with id by user with token
+     *
+     * @param token instagram user access token
+     * @param mediaId id of media to get comments
+     * @return comments model object (parsed from json)
+     */
     public Envelope.Media.Comments getComments(String token, String mediaId) {
         if(token == null)
             throw new IllegalArgumentException("Token can't be null");
@@ -89,30 +82,14 @@ public class HttpHelper {
         return api.getComments(token, mediaId);
     }
 
-    public int getCommentsAsync(String token, String mediaId,
-                                final HttpCallback<Envelope.Media.Comments> callback) {
-        if(token == null)
-            throw new IllegalArgumentException("Token can't be null");
-
-        if(mediaId == null)
-            throw new IllegalArgumentException("Media id can't be null");
-
-        api.getCommentsAsync(token, mediaId, new Callback<Envelope.Media.Comments>() {
-            @Override
-            public void success(Envelope.Media.Comments comments, Response response) {
-                callback.onResult(comments, null);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                error.printStackTrace();
-                callback.onResult(null, error);
-            }
-        });
-
-        return 0;
-    }
-
+    /**
+     * Makes instagram server api call to get list of likes
+     * for media with id by user with token
+     *
+     * @param token instagram user access token
+     * @param mediaId id of media to get likes
+     * @return likes model object (parsed from json)
+     */
     public Envelope.Media.Likes getLikes(String token, String mediaId) {
         if(token == null)
             throw new IllegalArgumentException("Token can't be null");
@@ -123,84 +100,46 @@ public class HttpHelper {
         return api.getLikes(token, mediaId);
     }
 
-    public int getLikesAsync(String token, String mediaId,
-                             final HttpCallback<Envelope.Media.Likes> callback) {
+    /**
+     * Makes instagram server api call to like media with id
+     * by user with token
+     *
+     * @param token instagram user access token
+     * @param mediaId id of media to like
+     */
+    public void like(String token, String mediaId) {
         if(token == null)
             throw new IllegalArgumentException("Token can't be null");
 
         if(mediaId == null)
             throw new IllegalArgumentException("Media id can't be null");
 
-        api.getLikesAsync(token, mediaId, new Callback<Envelope.Media.Likes>() {
-            @Override
-            public void success(Envelope.Media.Likes likes, Response response) {
-                if(callback != null)
-                    callback.onResult(likes, null);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                error.printStackTrace();
-                if(callback != null)
-                    callback.onResult(null, error);
-            }
-        });
-
-        return 0;
+        api.like(token, mediaId);
     }
 
-    public int likeAsync(String token, String mediaId,
-                         final HttpCallback<Envelope.Media.Likes> callback) {
+    /**
+     * Makes instagram server api call to unlike media with id
+     * by user with token
+     *
+     * @param token instagram user access token
+     * @param mediaId id of media to unlike
+     */
+    public void unlike(String token, String mediaId) {
         if(token == null)
             throw new IllegalArgumentException("Token can't be null");
 
         if(mediaId == null)
             throw new IllegalArgumentException("Media id can't be null");
 
-        api.likeAsync(token, mediaId, new Callback<Envelope.Media.Likes>() {
-            @Override
-            public void success(Envelope.Media.Likes likes, Response response) {
-                if(callback != null)
-                    callback.onResult(likes, null);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                error.printStackTrace();
-                if(callback != null)
-                    callback.onResult(null, error);
-            }
-        });
-
-        return 0;
+        api.unlike(token, mediaId);
     }
 
-    public int unlikeAsync(String token, String mediaId,
-                             final HttpCallback<Envelope.Media.Likes> callback) {
-        if(token == null)
-            throw new IllegalArgumentException("Token can't be null");
-
-        if(mediaId == null)
-            throw new IllegalArgumentException("Media id can't be null");
-
-        api.unlikeAsync(token, mediaId, new Callback<Envelope.Media.Likes>() {
-            @Override
-            public void success(Envelope.Media.Likes likes, Response response) {
-                if(callback != null)
-                    callback.onResult(likes, null);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                error.printStackTrace();
-                if(callback != null)
-                    callback.onResult(null, error);
-            }
-        });
-
-        return 0;
-    }
-
+    /**
+     * Loads image with url from cache/sd/server and shows it in view
+     *
+     * @param url image url to load from
+     * @param view image view to load into
+     */
     public void loadImage(String url, ImageView view) {
 
         Picasso.with(context)
@@ -210,9 +149,18 @@ public class HttpHelper {
                .into(view);
     }
 
-
+    /**
+     * Httt helper callback to return data after async loads
+     *
+     * @param <T> Object to receive as a result
+     */
     public interface HttpCallback<T> {
-
+        /**
+         * Fires when load is completed and data/exception is ready to be returned
+         *
+         * @param result received result
+         * @param exception possible exception
+         */
         public void onResult(T result, Exception exception);
     }
 

@@ -2,6 +2,7 @@ package tk.atna.instagram4ik;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 
 import tk.atna.instagram4ik.provider.InstaContract;
@@ -15,11 +16,12 @@ public class ContentMapper {
     private static final int DEFAULT_IMAGE_RESOLUTION = STANDARD_RESOLUTION;
 
 
-//    private ContentMapper(Context context) {
-//        this.contentResolver = context.getContentResolver();
-//    }
-
-
+    /**
+     * Pushes single media into sqlite
+     *
+     * @param cr values to add
+     * @param media media model object
+     */
     public static void pushMediaToProvider(ContentResolver cr, Envelope.Media media) {
 
         if(cr == null || media == null)
@@ -47,6 +49,13 @@ public class ContentMapper {
                 media.id), cv, null, null);
     }
 
+    /**
+     * Pushes single comment into sqlite
+     *
+     * @param cr values to add
+     * @param mediaId id of media to add comment for
+     * @param comment comment model object
+     */
     public static void pushCommentToProvider(ContentResolver cr, String mediaId,
                                              Envelope.Media.Comments.Comment comment) {
 
@@ -65,6 +74,13 @@ public class ContentMapper {
                 mediaId), cv, null, null);
     }
 
+    /**
+     * Pushes single like into sqlite
+     *
+     * @param cr values to add
+     * @param mediaId id of media to add like for
+     * @param like like model object
+     */
     public static void pushLikeToProvider(ContentResolver cr, String mediaId,
                                              Envelope.Media.User like) {
 
@@ -80,6 +96,41 @@ public class ContentMapper {
                 mediaId), cv, null, null);
     }
 
+    /**
+     * Converts media data from cursor into DetailedMedia object representation
+     *
+     * @param cursor cursor to take media data from
+     * @return media in DetailedMedia
+     */
+    public static DetailedMedia cursorToDetailedMedia(Cursor cursor) {
+        if(cursor != null && cursor.moveToFirst()) {
+            if(cursor.getCount() == 1) {
+                return new DetailedMedia(cursor.getString(
+                        cursor.getColumnIndex(InstaContract.Feed.FEED_MEDIA_ID)))
+                    .setImageUrl(cursor.getString(
+                            cursor.getColumnIndex(InstaContract.Feed.FEED_IMAGE_URL)))
+                    .setiLiked(cursor.getInt(
+                            cursor.getColumnIndex(InstaContract.Feed.FEED_I_LIKED)) > 0)
+                    .setLikesCount(cursor.getInt(
+                            cursor.getColumnIndex(InstaContract.Feed.FEED_LIKES_COUNT)))
+                    .setCommentsCount(cursor.getInt(
+                            cursor.getColumnIndex(InstaContract.Feed.FEED_COMMENTS_COUNT)))
+                    .setCreatedTime(cursor.getString(
+                            cursor.getColumnIndex(InstaContract.Feed.FEED_CREATED)))
+                    .setCaption(cursor.getString(
+                            cursor.getColumnIndex(InstaContract.Feed.FEED_CAPTION)));
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets image object according to resolution
+     *
+     * @param images set of images
+     * @param resolution resolution to choose
+     * @return image model object
+     */
     private static Envelope.Media.Images.Image getImageWithResolution(
             Envelope.Media.Images images, int resolution) {
 

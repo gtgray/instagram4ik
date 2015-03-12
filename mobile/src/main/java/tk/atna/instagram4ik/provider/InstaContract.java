@@ -17,6 +17,9 @@ public final class InstaContract {
     }
 
 
+    /**
+     * Table Feed collumns
+     */
     public static class Feed {
 
         public static final String DEFAULT_MEDIA_TYPE = "image";
@@ -41,8 +44,14 @@ public final class InstaContract {
     }
 
 
+    /**
+     * Table Comments collumns
+     */
     public static class Comments {
 
+        /**
+         * Limit of comments per media in feed list
+         */
         public static final String LIMIT_COMMENTS_PER_MEDIA = "5";
         public static final String LIMIT = "limit";
 
@@ -68,6 +77,9 @@ public final class InstaContract {
     }
 
 
+    /**
+     * Table Likes collumns
+     */
     public static class Likes {
 
         public static final String TABLE_LIKES = "likes";

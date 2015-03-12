@@ -1,9 +1,5 @@
 package tk.atna.instagram4ik;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,9 +10,6 @@ import android.util.Log;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.SimpleTimeZone;
 
 /**
  * Class that contains various instrumental methods
@@ -30,7 +23,7 @@ public class Utils {
     /**
      * First tries to find fragment by tag in fragment manager.
      * Otherwise, creates it or initializes (with data or not, optional).
-     * Sets retainance. Loads into container with tag.
+     * Adds to backstack (optional). Loads into container with tag.
      *
      * @param fm link to fragment manager
      * @param container resource to park fragment to
@@ -113,8 +106,8 @@ public class Utils {
     }
 
     /**
-     * Tries to initialize fragment of type clazz by one of three methods:
-     * init(Class, Bundle), init(Bundle), init().
+     * Tries to initialize fragment of type clazz by one of methods:
+     * init(Bundle), init().
      *
      * @param clazz type of fragment to initialize
      * @param data data to initialize fragment with
@@ -146,58 +139,25 @@ public class Utils {
         return null;
     }
 
-    public static boolean isNetworkUp(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        // network is not available at all
-        if(cm == null)
-            return false;
-
-        NetworkInfo ni = cm.getActiveNetworkInfo();
-        // default network is presented and it is able to connect through and it is connected now
-        return (ni != null) && ni.isAvailable() && ni.isConnected();
-    }
-
+    /**
+     * Converts timestamp in seconds into human readable representation
+     *
+     * @param secs timestamp in seconds
+     * @return timestamp in FULL_TIMESTAMP_FORMAT format
+     */
     public static String formatTime(String secs) {
         return Utils.millisToLocalDate(Long.valueOf(secs) * 1000, Utils.FULL_TIMESTAMP_FORMAT);
     }
 
+    /**
+     * Converts timestamp in millis into human readable representation
+     *
+     * @param millis timestamp in millis
+     * @param format format to convert into
+     * @return timestamp in format
+     */
     public static String millisToLocalDate(long millis, String format) {
         return (DateFormat.format(format, millis)).toString();
-    }
-
-    public static String millisToUtcDate(long millis, String format) {
-        Calendar calendar = new GregorianCalendar(new SimpleTimeZone(0, "UTC"));
-        calendar.setTimeInMillis(millis);
-        return (DateFormat.format(format, calendar)).toString();
-    }
-
-    // shows a cursor contents
-    public static void printCursor(Cursor cursor) {
-        // checking if the query was succeeded
-        if(cursor != null) {
-            // if the result set of rows is empty
-            if(cursor.moveToFirst()) {
-                StringBuilder record;
-                do {
-                    record = new StringBuilder();
-                    for(String str : cursor.getColumnNames()) {
-                        record.append(str);
-                        record.append(" = ");
-                        record.append(cursor.getString(cursor.getColumnIndex(str)));
-                        record.append("; ");
-
-                    }
-                    Log.d("myLogs", record.toString());
-                } while(cursor.moveToNext());
-            } else {
-                // there are no rows in query result set
-                Log.d("myLogs", "0 rows");
-            }
-            // if it is not
-        } else {
-            Log.d("myLogs", "Cursor is null!");
-        }
     }
 
 }

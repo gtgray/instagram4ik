@@ -1,4 +1,4 @@
-package tk.atna.instagram4ik;
+package tk.atna.instagram4ik.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import tk.atna.instagram4ik.AccountHelper;
+import tk.atna.instagram4ik.R;
 
 
 public class LoginActivity extends Activity {
@@ -40,24 +42,35 @@ public class LoginActivity extends Activity {
             makeWebLogout();
             return;
         }
-
+        //
         makeWebLogin();
     }
 
+    /**
+     * Shows login form  in a web view
+     */
     private void makeWebLogin() {
         initWebView(webView, new WebLoginClient(), true);
         showLoginForm();
     }
 
+    /**
+     * Just makes logout instagram server api call.
+     * Showns no web view.
+      */
     private void makeWebLogout() {
         WebView webView = new WebView(this);
         initWebView(webView, new WebLogoutClient(), false);
         webView.loadUrl(AccountHelper.getLogoutUrl());
-
-//        String cookie = CookieManager.getInstance().getCookie("instagram.com");
-//        Log.d("myLogs", "----------- cookie: " + cookie);
     }
 
+    /**
+     * Initializes web view
+     *
+     * @param webView web view to initialize
+     * @param client web client to load pages
+     * @param withJS whether use JS on pages or not
+     */
     private void initWebView(WebView webView, WebViewClient client, boolean withJS) {
 
         webView.setWebChromeClient(new WebChromeClient() {
@@ -71,16 +84,27 @@ public class LoginActivity extends Activity {
         webView.getSettings().setJavaScriptEnabled(withJS);
     }
 
+    /**
+     * Loads instagram login form into webview
+      */
     private void showLoginForm() {
         clearWebView();
         webView.loadUrl(AccountHelper.getAuthUrl(getString(R.string.client_id)));
     }
 
+    /**
+     * Flushes web view
+     */
     private void clearWebView() {
         webView.loadUrl(AccountHelper.getBlank());
         webView.clearHistory();
     }
 
+    /**
+     * Shows progress bar
+     *
+     * @param progress new progress value
+     */
     private void showProgress(int progress) {
         if(progress < 0 && progress > 100) {
             progressBar.setVisibility(View.GONE);
@@ -99,6 +123,11 @@ public class LoginActivity extends Activity {
 //        progressBar.setProgress(progress);
     }
 
+    /**
+     * Starts main activity and finishes login activity
+     *
+     * @param token instagram user access token
+     */
     private void startMain(String token) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(MainActivity.class.getName(), token);
@@ -106,13 +135,15 @@ public class LoginActivity extends Activity {
         finish();
     }
 
-
+    /**
+     * Web client which parses redirecting urls and seeks needed.
+     * According to: https://instagram.com/developer/authentication/
+     * Implicit flow.
+     */
     class WebLoginClient extends WebViewClient {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-//            Log.d("myLogs", "shouldOverrideUrlLoading ----------- url: " + url);
-
             Uri uri = AccountHelper.hitTargetRedirect(url);
             // if target host hit
             if(uri != null) {
@@ -138,13 +169,13 @@ public class LoginActivity extends Activity {
         }
     }
 
-
+    /**
+     * Web client which makes a method call on any page loaded
+     */
     class WebLogoutClient extends WebViewClient {
 
         @Override
         public void onPageFinished(WebView view, String url) {
-//            Log.d("myLogs", "onPageFinished ----------- url: " + url);
-
             makeWebLogin();
         }
     }

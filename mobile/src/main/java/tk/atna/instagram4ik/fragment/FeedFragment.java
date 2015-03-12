@@ -1,9 +1,8 @@
 package tk.atna.instagram4ik.fragment;
 
-import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,18 +12,23 @@ import android.widget.ListView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import tk.atna.instagram4ik.ContentManager;
+import tk.atna.instagram4ik.LocalBroadcaster;
 import tk.atna.instagram4ik.R;
 import tk.atna.instagram4ik.adapter.FeedCursorAdapter;
+import tk.atna.instagram4ik.provider.InstaContract;
 
-public class FeedFragment extends BaseFragment implements OnRefreshListener {
+public class FeedFragment extends BaseFragment
+                          implements SwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG = FeedFragment.class.getSimpleName();
 
     public static final int TITLE = R.string.feed;
 
+    public static final int FEED_CURSOR_LOADER = 0x00000cc1;
+
     private ContentManager contentManager = ContentManager.get();
 
-    private FeedCursorAdapter adapter;
+//    private FeedCursorAdapter adapter;
 
     @InjectView(R.id.swipe_container)
     SwipeRefreshLayout swipeRefresh;
@@ -32,9 +36,14 @@ public class FeedFragment extends BaseFragment implements OnRefreshListener {
     @InjectView(R.id.feed_list)
     ListView feedList;
 
+    // current list position
     private int currItem;
 
-
+    /**
+     * Initializes FeedFragment
+     *
+     * @return instance of retained FeedFregment class
+     */
     public static FeedFragment newInstance() {
         FeedFragment fragment = new FeedFragment();
         fragment.setRetainInstance(true);
@@ -42,9 +51,9 @@ public class FeedFragment extends BaseFragment implements OnRefreshListener {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
-
         ButterKnife.inject(this, view);
 
         swipeRefresh.setOnRefreshListener(this);
@@ -54,13 +63,16 @@ public class FeedFragment extends BaseFragment implements OnRefreshListener {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
-                            Log.d("myLogs", "---------- onClick: " + v.getTag());
-
-                            // call details fragment
+                            // calls details fragment
                             Bundle data = new Bundle();
                             data.putString(MEDIA_ID, (String) v.getTag());
                             makeFragmentAction(ACTION_MEDIA_DETAILS, data);
+
+                            Log.d("myLogs", "------------- ID " + v.getTag());
+
+                            ((FeedCursorAdapter) adapter).getFirstMediaId();
+                            ((FeedCursorAdapter) adapter).getLastMediaId();
+
                         }
                     });
 
@@ -74,8 +86,9 @@ public class FeedFragment extends BaseFragment implements OnRefreshListener {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        refreshFeed();
-
+        // refresh list at start
+        if(savedInstanceState == null)
+            contentManager.getFeed();
     }
 
     @Override
@@ -85,41 +98,52 @@ public class FeedFragment extends BaseFragment implements OnRefreshListener {
         currItem = feedList.getFirstVisiblePosition();
     }
 
+    /**
+     * LocalBroadcaster callback to catch and process commands (with data)
+     *
+     * @param action action to process
+     * @param data received data
+     */
     @Override
-    protected void receiveAction(int action, Bundle data) {
-
+    public void onReceive(int action, Bundle data) {
+        switch (action) {
+            // feed loaded, hide progress
+            case LocalBroadcaster.ACTION_REFRESH_FEED:
+                swipeRefresh.setRefreshing(false);
+                break;
+            // like/unlike callback
+            case LocalBroadcaster.ACTION_REFRESH:
+                if (data != null) {
+                    String mediaId = data.getString(LocalBroadcaster.MEDIA_ID);
+                    if(mediaId != null)
+                        // load new details for media with id
+                        contentManager.getMediaDetails(mediaId);
+                }
+                break;
+        }
     }
 
     @Override
-    protected int getTAG() {
-        return TAG.hashCode();
+    protected CursorLoader getCursorLoader() {
+        return new CursorLoader(getActivity(),
+                                InstaContract.Feed.CONTENT_URI,
+                                null, null, null, null);
     }
 
+    @Override
+    protected int getLoaderId() {
+        return FEED_CURSOR_LOADER;
+    }
+
+    /**
+     * Callback of pull-to-refresh layout, the point from where
+     * it is needed to start loading a new data
+     */
     @Override
     public void onRefresh() {
+        // show progress
         swipeRefresh.setRefreshing(true);
-
-        // TODO feed refreshing with just created items
-    }
-
-    private void refreshWithNextPage() {
-
-
-        // TODO feed refreshing with older items
-    }
-
-    private void refreshFeed() {
-        contentManager.getFeed(new ContentManager.ContentCallback<Cursor>() {
-            @Override
-            public void onResult(Cursor cursor, Exception exception) {
-                if(exception != null) {
-                    exception.printStackTrace();
-                    return;
-                }
-                if(adapter != null)
-                    adapter.changeCursor(cursor);
-            }
-        });
+        contentManager.getFeedLater(((FeedCursorAdapter) adapter).getFirstMediaId());
     }
 
 }

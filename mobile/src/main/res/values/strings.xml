@@ -4,6 +4,7 @@
     <string name="client_id">5e0a137c6062453d915aa79f09478163</string>
 
     <string name="feed">Feed</string>
+    <string name="details">Details</string>
 
     <string name="commented">"Commented: "</string>
     <string name="liked">"Liked: "</string>

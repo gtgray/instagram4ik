@@ -21,7 +21,6 @@ public class CommentsCursorAdapter extends CursorAdapter {
 
     private LayoutInflater inflater;
 
-//    private int mediaIdIndex;
     private int textIndex;
     private int usernameIndex;
     private int pictureIndex;
@@ -52,10 +51,12 @@ public class CommentsCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         ItemViewHolder holder = (ItemViewHolder) view.getTag();
 
-        contentManager.getImage(cursor.getString(pictureIndex), holder.ivPicture);
-        holder.tvUsername.setText(cursor.getString(usernameIndex));
-        holder.tvCreated.setText(formatTime(cursor.getString(commentCreatedIndex)));
-        holder.tvText.setText(cursor.getString(textIndex));
+        if(cursor != null && !cursor.isClosed()) {
+            contentManager.getImage(cursor.getString(pictureIndex), holder.ivPicture);
+            holder.tvUsername.setText(cursor.getString(usernameIndex));
+            holder.tvCreated.setText(Utils.formatTime(cursor.getString(commentCreatedIndex)));
+            holder.tvText.setText(cursor.getString(textIndex));
+        }
     }
 
     @Override
@@ -65,11 +66,15 @@ public class CommentsCursorAdapter extends CursorAdapter {
         rememberColumns(cursor);
     }
 
+    /**
+     * Remembers cursor column indexes for future reuse
+     *
+     * @param cursor cursor whose columns
+     */
     private void rememberColumns(Cursor cursor) {
         if(cursor == null)
             return;
 
-//        this.mediaIdIndex = cursor.getColumnIndex(InstaContract.Comments.COMMENTS_MEDIA_ID);
         this.pictureIndex = cursor.getColumnIndex(InstaContract.Comments.COMMENTS_PICTURE);
         this.usernameIndex = cursor.getColumnIndex(InstaContract.Comments.COMMENTS_USERNAME);
         this.textIndex = cursor.getColumnIndex(InstaContract.Comments.COMMENTS_COMMENT_TEXT);
@@ -77,11 +82,10 @@ public class CommentsCursorAdapter extends CursorAdapter {
                 InstaContract.Comments.COMMENTS_COMMENT_CREATED);
     }
 
-    private String formatTime(String time) {
-        return Utils.millisToLocalDate(Long.valueOf(time) * 1000, Utils.FULL_TIMESTAMP_FORMAT);
-    }
 
-
+    /**
+     * View holder class for list view items
+     */
     class ItemViewHolder {
 
         @InjectView(R.id.details_comment_user_picture)

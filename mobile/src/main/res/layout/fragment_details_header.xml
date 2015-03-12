@@ -11,31 +11,33 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_margin="8dp"
         >
 
         <ImageView
             android:id="@+id/details_header_image"
-            android:layout_width="200dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
             android:background="@drawable/ic_picture_default"
             android:contentDescription="@string/app_name"
             />
+            <!--android:layout_margin="8dp"-->
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="8dp"
             android:orientation="vertical"
             >
+
             <TextView
-                android:id="@+id/details_header_liked"
+                android:id="@+id/details_header_created"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/liked"
+                android:text="@string/created"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 />
@@ -44,18 +46,18 @@
                 android:id="@+id/details_header_commented"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="4dp"
                 android:text="@string/commented"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 />
 
             <TextView
-                android:id="@+id/details_header_created"
+                android:id="@+id/details_header_liked"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/created"
+                android:layout_marginTop="4dp"
+                android:text="@string/liked"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 />
@@ -63,60 +65,63 @@
             <TextView
                 android:id="@+id/details_header_caption"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:text="@string/app_name"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:maxLines="5"
+                android:maxLines="10"
                 />
 
         </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        android:layout_below="@id/details_header_info"
+        >
+
+        <HorizontalScrollView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="64dp"
+            android:paddingRight="8dp"
+            android:paddingLeft="8dp"
+            android:background="@drawable/drw_list_item_back_upper_divider"
+            >
+
+            <LinearLayout
+                android:id="@+id/details_header_likers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+            </LinearLayout>
+
+            </HorizontalScrollView>
 
         <CheckedTextView
             android:id="@+id/details_header_btn_like"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_gravity="center_vertical"
             android:background="@drawable/slc_btn_like_state"
             />
 
     </LinearLayout>
 
     <TextView
-        android:id="@+id/details_header_likers"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_marginTop="8dp"
-        android:layout_below="@id/details_header_info"
-        android:padding="8dp"
-        android:text="@string/app_name"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:maxLines="3"
-        android:scrollHorizontally="true"
-        android:scrollbars="horizontal"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:layout_below="@id/details_header_likers"
-        android:text="@string/likes"
-        android:textSize="16sp"
-        android:gravity="center"
-        android:drawableRight="@drawable/ic_go_right"
-        android:drawableEnd="@drawable/ic_go_right"
-        android:drawablePadding="16dp"
-        android:background="@drawable/slc_btn_state"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/clr_divider"
         />
 
 </RelativeLayout>
