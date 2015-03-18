@@ -22,7 +22,7 @@ public class HttpHelper {
         // setup retrofit
         RestAdapter ra = new RestAdapter.Builder()
                 .setEndpoint(ServerApi.SERVER_URL)
-//                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setLogLevel(RestAdapter.LogLevel.BASIC)
                 .build();
         // retrofit server api inflater
         api = ra.create(ServerApi.class);

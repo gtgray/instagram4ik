@@ -104,10 +104,10 @@ public class FeedCursorAdapter extends CursorAdapter {
 
             populateLimitedComments(holder.llComments, cursor.getString(mediaIdIndex));
 
-            // load next page
-            int position = cursor.getPosition();
-            if(position > 0 && position > getCount() - 3)
-                contentManager.getFeedLater(getLastMediaId());
+//            // load next page
+//            int position = cursor.getPosition();
+//            if(position > 0 && position > getCount() - 3)
+//                contentManager.getFeedLater(getLastMediaId());
 
         }
     }

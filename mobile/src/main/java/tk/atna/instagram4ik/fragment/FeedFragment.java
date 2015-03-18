@@ -1,9 +1,10 @@
 package tk.atna.instagram4ik.fragment;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,19 @@ public class FeedFragment extends BaseFragment
     // current list position
     private int currItem;
 
+    // flag to prevent multiple loading simultaneously
+    private boolean isFeedRefreshing = false;
+
+    private View.OnClickListener feedImageClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            // calls details fragment
+            Bundle data = new Bundle();
+            data.putString(MEDIA_ID, (String) v.getTag());
+            makeFragmentAction(ACTION_MEDIA_DETAILS, data);
+        }
+    };
+
     /**
      * Initializes FeedFragment
      *
@@ -59,22 +73,20 @@ public class FeedFragment extends BaseFragment
         swipeRefresh.setOnRefreshListener(this);
 
         if(adapter == null)
-            adapter = new FeedCursorAdapter(inflater.getContext(), null, contentManager,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // calls details fragment
-                            Bundle data = new Bundle();
-                            data.putString(MEDIA_ID, (String) v.getTag());
-                            makeFragmentAction(ACTION_MEDIA_DETAILS, data);
+            adapter = new FeedCursorAdapter(inflater.getContext(), null,
+                                            contentManager, feedImageClickListener) {
+                @Override
+                public void bindView(View view, Context context, Cursor cursor) {
+                    super.bindView(view, context, cursor);
 
-                            Log.d("myLogs", "------------- ID " + v.getTag());
-
-                            ((FeedCursorAdapter) adapter).getFirstMediaId();
-                            ((FeedCursorAdapter) adapter).getLastMediaId();
-
-                        }
-                    });
+                    // load next page
+                    int position = cursor.getPosition();
+                    if(position > 0 && position > cursor.getCount() - 3 && !isFeedRefreshing) {
+                        contentManager.getFeedEarlier(getLastMediaId());
+                        isFeedRefreshing = true;
+                    }
+                }
+            };
 
         feedList.setAdapter(adapter);
         feedList.setSelection(currItem);
@@ -110,6 +122,7 @@ public class FeedFragment extends BaseFragment
             // feed loaded, hide progress
             case LocalBroadcaster.ACTION_REFRESH_FEED:
                 swipeRefresh.setRefreshing(false);
+                isFeedRefreshing = false;
                 break;
             // like/unlike callback
             case LocalBroadcaster.ACTION_REFRESH:
